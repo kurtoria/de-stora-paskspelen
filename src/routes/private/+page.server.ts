@@ -156,6 +156,41 @@ export const actions = {
     await writeScoreboard(store);
     throw redirect(303, `/private?year=${yearValue}`);
   },
+  updatePerson: async ({ request, cookies, url }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue =
+      String(form.get("year") ?? "").trim() ||
+      url.searchParams.get("year") ||
+      getCurrentYear();
+    const personId = String(form.get("personId") ?? "").trim();
+    const name = String(form.get("name") ?? "").trim();
+
+    if (!name) {
+      return fail(400, { error: "Skriv ett namn." });
+    }
+
+    const store = await readScoreboard();
+    const person = store.people.find((entry) => entry.id === personId);
+
+    if (!person) {
+      return fail(404, { error: "Deltagaren kunde inte hittas." });
+    }
+
+    const duplicate = store.people.find(
+      (entry) =>
+        entry.id !== personId &&
+        entry.name.toLocaleLowerCase("sv") === name.toLocaleLowerCase("sv"),
+    );
+
+    if (duplicate) {
+      return fail(400, { error: "Det finns redan en deltagare med det namnet." });
+    }
+
+    person.name = name;
+    await writeScoreboard(store);
+    throw redirect(303, `/private?year=${yearValue}`);
+  },
   deletePerson: async ({ request, cookies, url }) => {
     requireAuth(cookies);
     const form = await request.formData();

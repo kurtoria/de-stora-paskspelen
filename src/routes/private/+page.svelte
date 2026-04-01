@@ -165,40 +165,40 @@
       </div>
     </div>
 
-    <div class="mt-6 space-y-4">
+    <div class="mt-5 space-y-3">
       {#each data.currentYear?.rows ?? [] as row}
         <form
           method="post"
           action="?/updateRow"
-          class="rounded-3xl border border-border bg-black/10 p-4"
+          class="rounded-3xl border border-border bg-black/10 p-3 sm:p-4"
         >
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="rowId" value={row.id} />
 
-          <div class="grid gap-3 lg:grid-cols-[1.3fr_1fr_auto] lg:items-start">
-            <div class="space-y-3">
+          <div class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start">
+            <div class="space-y-2">
               <input
                 name="title"
                 type="text"
                 value={row.title}
                 placeholder="Rubrik"
-                class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+                class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
               />
               <textarea
                 name="description"
-                rows="2"
+                rows="1"
                 placeholder="Beskrivning"
-                class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+                class="min-h-0 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
                 >{row.description}</textarea
               >
             </div>
 
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="grid grid-cols-2 gap-2 xl:grid-cols-3">
               {#each data.participants as person}
                 <label
-                  class="rounded-2xl border border-border bg-white/80 p-3 text-text-primary"
+                  class="rounded-xl border border-border bg-white/80 px-3 py-2 text-text-primary"
                 >
-                  <span class="mb-2 block text-sm font-semibold"
+                  <span class="mb-1 block text-xs font-semibold leading-tight sm:text-sm"
                     >{person.name}</span
                   >
                   <input
@@ -206,15 +206,15 @@
                     type="number"
                     inputmode="numeric"
                     value={row.scores[person.id] ?? 0}
-                    class="w-full rounded-xl border border-border px-3 py-3 text-lg"
+                    class="w-full rounded-lg border border-border px-2.5 py-2 text-base"
                   />
                 </label>
               {/each}
             </div>
 
-            <div class="flex gap-2 lg:flex-col">
+            <div class="flex gap-2 lg:flex-col lg:self-stretch">
               <button
-                class="flex-1 rounded-full bg-secondary px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary"
+                class="flex-1 rounded-full bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary"
               >
                 Spara
               </button>
@@ -222,11 +222,11 @@
           </div>
         </form>
 
-        <form method="post" action="?/deleteRow" class="-mt-2 flex justify-end">
+        <form method="post" action="?/deleteRow" class="-mt-1 flex justify-end">
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="rowId" value={row.id} />
           <button
-            class="rounded-full px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition"
+            class="rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] transition"
           >
             Ta bort rad
           </button>
@@ -445,6 +445,37 @@
       Skapa år
     </button>
   </form>
+
+  <div class="mt-8 space-y-3 border-t border-border pt-8">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Redigera deltagare
+    </p>
+    <div class="space-y-2">
+      {#each allPeople as person}
+        <form method="post" action="?/updatePerson" class="flex items-center gap-2">
+          <input type="hidden" name="year" value={data.selectedYear} />
+          <input type="hidden" name="personId" value={person.id} />
+          <input
+            name="name"
+            type="text"
+            value={person.name}
+            class="flex-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+          />
+          <button
+            type="submit"
+            class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+          >
+            Spara
+          </button>
+        </form>
+      {/each}
+      {#if allPeople.length === 0}
+        <p class="text-sm text-text-primary">Inga deltagare att redigera.</p>
+      {/if}
+    </div>
+  </div>
 
   <div class="mt-8 space-y-3 border-t border-border pt-8">
     <p
