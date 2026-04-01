@@ -32,7 +32,12 @@ const dataFilePath = path.join(dataDirectory, "scoreboard.json");
 const blobPathname = "scoreboard/scoreboard.json";
 
 const createId = () => randomUUID();
-const usesBlobStorage = () => Boolean(env.BLOB_READ_WRITE_TOKEN);
+const getBlobToken = () => {
+  const token = env.BLOB_READ_WRITE_TOKEN?.trim();
+  return token ? token : null;
+};
+
+const usesBlobStorage = () => Boolean(getBlobToken());
 
 const defaultStore = (): ScoreboardStore => ({
   people: [],
@@ -103,7 +108,12 @@ const readLocalScoreboard = async (): Promise<ScoreboardStore> => {
 };
 
 const readBlobScoreboard = async (): Promise<ScoreboardStore | null> => {
-  const result = await get(blobPathname, { access: "private" });
+  const token = getBlobToken();
+  if (!token) {
+    return null;
+  }
+
+  const result = await get(blobPathname, { access: "private", token });
   if (!result || result.statusCode !== 200 || !result.stream) {
     return null;
   }
@@ -119,9 +129,15 @@ const readBlobScoreboard = async (): Promise<ScoreboardStore | null> => {
 
 export const readScoreboard = async (): Promise<ScoreboardStore> => {
   if (usesBlobStorage()) {
-    const blobStore = await readBlobScoreboard();
-    if (blobStore) {
-      return blobStore;
+    try {
+      const blobStore = await readBlobScoreboard();
+      if (blobStore) {
+        return blobStore;
+      }
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes("No token found")) {
+        throw error;
+      }
     }
 
     try {
@@ -138,24 +154,45 @@ export const writeScoreboard = async (store: ScoreboardStore) => {
   const sanitized = sanitizeStore(store);
 
   if (usesBlobStorage()) {
+    const token = getBlobToken();
+    if (!token) {
+      await ensureStoreFile();
+      await writeFile(dataFilePath, JSON.stringify(sanitized, null, 2), "utf8");
+      return;
+    }
+
     let etag: string | undefined;
 
     try {
-      const metadata = await head(blobPathname);
+      const metadata = await head(blobPathname, { token });
       etag = metadata.etag;
     } catch (error) {
-      if (!(error instanceof Error) || error.name !== "BlobNotFoundError") {
+      if (!(error instanceof Error)) {
+        throw error;
+      }
+
+      if (
+        error.name !== "BlobNotFoundError" &&
+        !error.message.includes("No token found")
+      ) {
         throw error;
       }
     }
 
-    await put(blobPathname, JSON.stringify(sanitized, null, 2), {
-      access: "private",
-      allowOverwrite: true,
-      contentType: "application/json",
-      ifMatch: etag,
-    });
-    return;
+    try {
+      await put(blobPathname, JSON.stringify(sanitized, null, 2), {
+        access: "private",
+        allowOverwrite: true,
+        contentType: "application/json",
+        ifMatch: etag,
+        token,
+      });
+      return;
+    } catch (error) {
+      if (!(error instanceof Error) || !error.message.includes("No token found")) {
+        throw error;
+      }
+    }
   }
 
   await ensureStoreFile();
