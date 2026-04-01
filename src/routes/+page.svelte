@@ -24,7 +24,9 @@
 </script>
 
 <div>
-  <section class="flex min-h-screen items-center justify-center px-4 text-primary">
+  <section
+    class="flex min-h-screen items-center justify-center px-4 text-primary"
+  >
     <div class="intro-stage">
       <h1 class="intro-word active-word" aria-label="De stora påskspelen">
         {introWords[activeWordIndex]}
@@ -34,11 +36,10 @@
 
   <section class="flex min-h-screen items-center px-4 py-8 sm:px-6">
     <div class="mx-auto w-full max-w-6xl">
-      <div class="mx-auto max-w-xl rounded-4xl border border-border bg-panel p-6 text-stone-900 shadow-subtle sm:p-8">
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
-          Inloggning
-        </p>
-        <h2 class="mt-3 text-2xl font-semibold">Öppna poängtavlan</h2>
+      <div
+        class="mx-auto max-w-xl rounded-4xl border border-border bg-panel p-6 text-stone-900 shadow-subtle sm:p-8"
+      >
+        <h2 class="text-2xl font-semibold">Inloggning</h2>
 
         {#if !data.authConfigured}
           <p class="mt-4 text-sm">
@@ -47,7 +48,9 @@
           </p>
         {:else}
           <form method="post" action="?/login" class="mt-6 space-y-4">
-            <label class="block text-sm font-medium" for="password">Lösenord</label>
+            <label class="block text-sm font-medium" for="password"
+              >Lösenord</label
+            >
             <input
               id="password"
               name="password"
