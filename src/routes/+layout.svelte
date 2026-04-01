@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
-<div class="relative min-h-screen overflow-hidden bg-secondary">
+<div class="relative min-h-screen overflow-hidden bg-background">
 
   <div class="relative z-10 flex min-h-screen flex-col">
     <main class="flex-1">
