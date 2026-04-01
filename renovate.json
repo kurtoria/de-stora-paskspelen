@@ -1,0 +1,44 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "schedule": ["before 6am on saturday"],
+  "dependencyDashboard": true,
+  "packageRules": [
+    {
+      "groupName": "svelte ecosystem",
+      "labels": ["dependencies", "svelte"],
+      "matchPackageNames": [
+        "svelte",
+        "/^@sveltejs\\//",
+        "@sveltejs/vite-plugin-svelte"
+      ]
+    },
+    {
+      "groupName": "build tooling",
+      "matchPackageNames": ["vite", "typescript"],
+      "labels": ["dependencies", "build"]
+    },
+    {
+      "groupName": "styling",
+      "matchPackageNames": [
+        "tailwindcss",
+        "@tailwindcss/typography",
+        "@tailwindcss/vite"
+      ],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "labels": ["dependencies", "styling"]
+    },
+    {
+      "groupName": "code quality",
+      "matchPackageNames": ["@biomejs/biome", "svelte-check"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "labels": ["dependencies", "quality"]
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["major-update"]
+    }
+  ]
+}
