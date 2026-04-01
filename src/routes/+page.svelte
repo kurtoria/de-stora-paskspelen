@@ -81,22 +81,41 @@
     place-items: center;
     width: 100%;
     min-height: 60vh;
+    padding: 1rem;
   }
 
   .intro-word {
     position: absolute;
     margin: 0;
-    font-size: clamp(5rem, 18vw, 16rem);
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 0.25rem;
+    font-size: clamp(2.8rem, 14vw, 16rem);
     font-weight: 600;
     letter-spacing: -0.08em;
-    line-height: 0.82;
+    line-height: 0.9;
     opacity: 0;
+    text-align: center;
     text-transform: uppercase;
     transform: scale(1);
+    white-space: nowrap;
     user-select: none;
   }
 
   .active-word {
     opacity: 1;
+  }
+
+  @media (max-width: 640px) {
+    .intro-stage {
+      min-height: 52vh;
+      padding: 1.25rem;
+    }
+
+    .intro-word {
+      font-size: clamp(2.2rem, 13vw, 4.8rem);
+      letter-spacing: -0.05em;
+      line-height: 0.92;
+    }
   }
 </style>
