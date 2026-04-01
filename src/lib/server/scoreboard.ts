@@ -1,3 +1,5 @@
+import { get, head, put } from "@vercel/blob";
+import { env } from "$env/dynamic/private";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -27,8 +29,10 @@ export type ScoreboardStore = {
 
 const dataDirectory = path.resolve(process.cwd(), "data");
 const dataFilePath = path.join(dataDirectory, "scoreboard.json");
+const blobPathname = "scoreboard/scoreboard.json";
 
 const createId = () => randomUUID();
+const usesBlobStorage = () => Boolean(env.BLOB_READ_WRITE_TOKEN);
 
 const defaultStore = (): ScoreboardStore => ({
   people: [],
@@ -87,7 +91,7 @@ const ensureStoreFile = async () => {
   }
 };
 
-export const readScoreboard = async (): Promise<ScoreboardStore> => {
+const readLocalScoreboard = async (): Promise<ScoreboardStore> => {
   await ensureStoreFile();
   const raw = await readFile(dataFilePath, "utf8");
 
@@ -98,13 +102,64 @@ export const readScoreboard = async (): Promise<ScoreboardStore> => {
   }
 };
 
+const readBlobScoreboard = async (): Promise<ScoreboardStore | null> => {
+  const result = await get(blobPathname, { access: "private" });
+  if (!result || result.statusCode !== 200 || !result.stream) {
+    return null;
+  }
+
+  const raw = await new Response(result.stream).text();
+
+  try {
+    return sanitizeStore(JSON.parse(raw) as ScoreboardStore);
+  } catch {
+    return defaultStore();
+  }
+};
+
+export const readScoreboard = async (): Promise<ScoreboardStore> => {
+  if (usesBlobStorage()) {
+    const blobStore = await readBlobScoreboard();
+    if (blobStore) {
+      return blobStore;
+    }
+
+    try {
+      return await readLocalScoreboard();
+    } catch {
+      return defaultStore();
+    }
+  }
+
+  return readLocalScoreboard();
+};
+
 export const writeScoreboard = async (store: ScoreboardStore) => {
+  const sanitized = sanitizeStore(store);
+
+  if (usesBlobStorage()) {
+    let etag: string | undefined;
+
+    try {
+      const metadata = await head(blobPathname);
+      etag = metadata.etag;
+    } catch (error) {
+      if (!(error instanceof Error) || error.name !== "BlobNotFoundError") {
+        throw error;
+      }
+    }
+
+    await put(blobPathname, JSON.stringify(sanitized, null, 2), {
+      access: "private",
+      allowOverwrite: true,
+      contentType: "application/json",
+      ifMatch: etag,
+    });
+    return;
+  }
+
   await ensureStoreFile();
-  await writeFile(
-    dataFilePath,
-    JSON.stringify(sanitizeStore(store), null, 2),
-    "utf8",
-  );
+  await writeFile(dataFilePath, JSON.stringify(sanitized, null, 2), "utf8");
 };
 
 export const findYear = (store: ScoreboardStore, yearValue: string) =>
@@ -155,4 +210,6 @@ export const normalizeYearScores = (year: ScoreYear) => {
   }
 };
 
-export const dataPath = dataFilePath;
+export const dataPath = usesBlobStorage()
+  ? `vercel-blob:private/${blobPathname}`
+  : dataFilePath;

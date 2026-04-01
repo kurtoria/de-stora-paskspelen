@@ -27,5 +27,8 @@
   },
   "volta": {
     "node": "22.12.0"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.3.2"
   }
 }
