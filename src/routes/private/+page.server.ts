@@ -89,7 +89,6 @@ export const actions = {
     requireAuth(cookies);
     const form = await request.formData();
     const yearValue = String(form.get("year") ?? "").trim();
-    const copyParticipantsFrom = String(form.get("copyParticipantsFrom") ?? "").trim();
 
     if (!/^\d{4}$/.test(yearValue)) {
       return fail(400, { error: "Året måste anges med fyra siffror." });
@@ -101,14 +100,29 @@ export const actions = {
     }
 
     const year = ensureYear(store, yearValue);
-    const sourceYear = copyParticipantsFrom
-      ? findYear(store, copyParticipantsFrom)
-      : null;
-    year.participantIds = sourceYear ? [...sourceYear.participantIds] : [];
+    year.participantIds = [];
     normalizeYearScores(year);
     await writeScoreboard(store);
 
     throw redirect(303, `/private?year=${yearValue}`);
+  },
+  deleteYear: async ({ request, cookies }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue = String(form.get("year") ?? "").trim();
+
+    const store = await readScoreboard();
+    const nextYears = store.years.filter((year) => year.year !== yearValue);
+
+    if (nextYears.length === store.years.length) {
+      return fail(404, { error: "Året kunde inte hittas." });
+    }
+
+    store.years = nextYears;
+    await writeScoreboard(store);
+
+    const redirectYear = store.years[store.years.length - 1]?.year;
+    throw redirect(303, redirectYear ? `/private?year=${redirectYear}` : "/private");
   },
   addPerson: async ({ request, cookies, url }) => {
     requireAuth(cookies);
@@ -142,7 +156,7 @@ export const actions = {
     await writeScoreboard(store);
     throw redirect(303, `/private?year=${yearValue}`);
   },
-  assignPerson: async ({ request, cookies, url }) => {
+  deletePerson: async ({ request, cookies, url }) => {
     requireAuth(cookies);
     const form = await request.formData();
     const yearValue =
@@ -151,24 +165,47 @@ export const actions = {
       getCurrentYear();
     const personId = String(form.get("personId") ?? "").trim();
 
-    if (!personId) {
-      return fail(400, { error: "Välj en person." });
+    const store = await readScoreboard();
+    const personExists = store.people.some((person) => person.id === personId);
+
+    if (!personExists) {
+      return fail(404, { error: "Deltagaren kunde inte hittas." });
     }
+
+    store.people = store.people.filter((person) => person.id !== personId);
+
+    for (const year of store.years) {
+      year.participantIds = year.participantIds.filter((id) => id !== personId);
+      normalizeYearScores(year);
+    }
+
+    await writeScoreboard(store);
+    throw redirect(303, `/private?year=${yearValue}`);
+  },
+  setParticipants: async ({ request, cookies, url }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue =
+      String(form.get("year") ?? "").trim() ||
+      url.searchParams.get("year") ||
+      getCurrentYear();
+    const selectedIds = form
+      .getAll("personId")
+      .map((value) => String(value).trim())
+      .filter(Boolean);
 
     const store = await readScoreboard();
-    const person = store.people.find((entry) => entry.id === personId);
-    if (!person) {
-      return fail(400, { error: "Personen kunde inte hittas." });
-    }
-
     const year = ensureYear(store, yearValue);
-    if (!year.participantIds.includes(personId)) {
-      year.participantIds.push(personId);
-      normalizeYearScores(year);
-      await writeScoreboard(store);
-    }
+    const validIds = new Set(store.people.map((person) => person.id));
+    year.participantIds = selectedIds.filter((personId) => validIds.has(personId));
+    normalizeYearScores(year);
+    await writeScoreboard(store);
 
-    throw redirect(303, `/private?year=${yearValue}`);
+    return {
+      success: true,
+      participantIds: year.participantIds,
+      year: yearValue,
+    };
   },
   addRow: async ({ request, cookies, url }) => {
     requireAuth(cookies);

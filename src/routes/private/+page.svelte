@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { applyAction, enhance } from "$app/forms";
+  import SlidePanel from "$lib/components/SlidePanel.svelte";
+  import type { SubmitFunction } from "@sveltejs/kit";
   import type { PageData } from "./$types";
 
   export let data: PageData;
@@ -8,15 +11,59 @@
       }
     | undefined;
 
-  let availablePeople =
-    data.scoreboard?.people.filter(
-      (person) => !data.currentYear?.participantIds.includes(person.id),
-    ) ?? [];
+  let showYearPanel = false;
+  let selectedParticipantIds = data.currentYear?.participantIds ?? [];
+  let newParticipantName = "";
+  let newYearValue: string | number = "";
+  let isSavingParticipants = false;
+  let participantSelectionVersion = `${data.selectedYear}:${(data.currentYear?.participantIds ?? []).join(",")}`;
 
-  $: availablePeople =
-    data.scoreboard?.people.filter(
-      (person) => !data.currentYear?.participantIds.includes(person.id),
-    ) ?? [];
+  let allPeople = data.scoreboard?.people ?? [];
+
+  $: allPeople = data.scoreboard?.people ?? [];
+  $: {
+    const nextVersion = `${data.selectedYear}:${(data.currentYear?.participantIds ?? []).join(",")}`;
+
+    if (nextVersion !== participantSelectionVersion) {
+      selectedParticipantIds = data.currentYear?.participantIds ?? [];
+      participantSelectionVersion = nextVersion;
+    }
+  }
+
+  const toggleParticipantSelection = (personId: string) => {
+    selectedParticipantIds = selectedParticipantIds.includes(personId)
+      ? selectedParticipantIds.filter((id) => id !== personId)
+      : [...selectedParticipantIds, personId];
+  };
+
+  $: canAddParticipant = newParticipantName.trim().length > 0;
+  $: canCreateYear = /^\d{4}$/.test(String(newYearValue ?? "").trim());
+  $: canSaveParticipants =
+    selectedParticipantIds.join(",") !==
+    (data.currentYear?.participantIds ?? []).join(",");
+  $: sortedParticipants = [...data.participants].sort((a, b) => {
+    const scoreDifference = (data.totals[b.id] ?? 0) - (data.totals[a.id] ?? 0);
+
+    if (scoreDifference !== 0) {
+      return scoreDifference;
+    }
+
+    return a.name.localeCompare(b.name, "sv");
+  });
+
+  const enhanceParticipants: SubmitFunction = () => {
+    isSavingParticipants = true;
+
+    return async ({ result, update }) => {
+      if (result.type === "success") {
+        await update({ reset: false, invalidateAll: true });
+      } else {
+        await applyAction(result);
+      }
+
+      isSavingParticipants = false;
+    };
+  };
 </script>
 
 <div class="mx-auto max-w-6xl px-4 py-6 text-primary sm:px-6 sm:py-10">
@@ -24,23 +71,10 @@
     class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
   >
     <div class="space-y-2">
-      <p class="text-xs font-semibold uppercase tracking-[0.3em]">Scoreboard</p>
       <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">
-        De stora påskspelen
+        De stora påskspelen {data.selectedYear}
       </h1>
-      <p class="max-w-2xl text-sm sm:text-base">
-        Årsflikar, återanvändbara personer och snabb poängsättning direkt i
-        mobilen.
-      </p>
     </div>
-
-    <form method="post" action="?/logout">
-      <button
-        class="inline-flex w-fit items-center justify-center rounded-full border border-border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition hover:bg-white/10"
-      >
-        Logga ut
-      </button>
-    </form>
   </header>
 
   {#if form?.error}
@@ -53,74 +87,24 @@
 
   <section class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
     <div
-      class="rounded-4xl border border-border bg-white/5 p-4 shadow-sm backdrop-blur sm:p-6"
+      class="rounded-4xl border border-border p-4 shadow-sm backdrop-blur sm:p-6"
     >
-      <div
-        class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
-      >
-        <div>
-          <p class="text-xs uppercase tracking-[0.24em]">År</p>
-          <div class="mt-3 flex flex-wrap gap-2">
-            {#each data.scoreboard?.years ?? [] as year}
-              <a
-                href={`/private?year=${year.year}`}
-                class={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
-                  data.selectedYear === year.year
-                    ? "border-secondary bg-secondary text-text-primary"
-                    : "border-border bg-transparent hover:bg-white/10"
-                }`}
-              >
-                {year.year}
-              </a>
-            {/each}
-            {#if (data.scoreboard?.years?.length ?? 0) === 0}
-              <span
-                class="rounded-full border border-dashed border-border px-4 py-2 text-sm"
-              >
-                Inga år ännu
-              </span>
-            {/if}
-          </div>
-        </div>
-
-        <form
-          method="post"
-          action="?/createYear"
-          class="grid gap-2 sm:grid-cols-[auto_auto_auto]"
-        >
-          <input
-            type="hidden"
-            name="copyParticipantsFrom"
-            value={data.selectedYear}
-          />
-          <input
-            name="year"
-            type="text"
-            inputmode="numeric"
-            pattern="[0-9]{4}"
-            placeholder="2027"
-            class="min-w-0 rounded-full border border-border bg-white px-4 py-3 text-base text-text-primary"
-          />
-          <button
-            class="rounded-full border border-border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition hover:bg-white/10"
-          >
-            Nytt år
-          </button>
-          <p class="self-center text-xs">Kopierar deltagare från valt år</p>
-        </form>
+      <div>
+        <h2 class="text-2xl font-semibold">Ställning</h2>
       </div>
-
+      <!-- TODO: sort participants based on score -->
       <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {#each data.participants as person}
-          <article class="rounded-3xl bg-text-primary px-4 py-4 text-secondary">
-            <p class="text-xs uppercase tracking-[0.22em]">Total</p>
-            <h2 class="mt-2 text-xl font-semibold">{person.name}</h2>
-            <p class="mt-4 text-3xl font-semibold">
+        {#each sortedParticipants as person}
+          <article
+            class="rounded-3xl bg-text-primary px-4 py-4 text-secondary flex justify-between items-center"
+          >
+            <h2 class="text-xl font-semibold">{person.name}</h2>
+            <p class="text-xl font-semibold">
               {data.totals[person.id] ?? 0}
             </p>
           </article>
         {/each}
-        {#if data.participants.length === 0}
+        {#if sortedParticipants.length === 0}
           <article
             class="rounded-3xl border border-dashed border-border px-4 py-4 text-sm"
           >
@@ -136,51 +120,10 @@
       <p
         class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500"
       >
-        Snabbtillägg
+        Ny poängrad
       </p>
 
-      <form method="post" action="?/addPerson" class="mt-4 space-y-3">
-        <input type="hidden" name="year" value={data.selectedYear} />
-        <label class="block text-sm font-medium" for="name">Ny person</label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          placeholder="Skriv ett namn"
-          class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
-        />
-        <button
-          class="w-full rounded-full bg-stone-900 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
-        >
-          Spara och lägg till i {data.selectedYear}
-        </button>
-      </form>
-
-      {#if availablePeople.length > 0}
-        <form method="post" action="?/assignPerson" class="mt-6 space-y-3">
-          <input type="hidden" name="year" value={data.selectedYear} />
-          <label class="block text-sm font-medium" for="personId"
-            >Återanvänd person</label
-          >
-          <select
-            id="personId"
-            name="personId"
-            class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
-          >
-            <option value="">Välj person</option>
-            {#each availablePeople as person}
-              <option value={person.id}>{person.name}</option>
-            {/each}
-          </select>
-          <button
-            class="w-full rounded-full border border-stone-400 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
-          >
-            Lägg till i {data.selectedYear}
-          </button>
-        </form>
-      {/if}
-
-      <form method="post" action="?/addRow" class="mt-6 space-y-3">
+      <form method="post" action="?/addRow" class="mt-4 space-y-3">
         <input type="hidden" name="year" value={data.selectedYear} />
         <label class="block text-sm font-medium" for="title">Ny poängrad</label>
         <input
@@ -218,13 +161,8 @@
       class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
     >
       <div>
-        <p class="text-xs uppercase tracking-[0.24em]">Poängrader</p>
-        <h2 class="mt-1 text-2xl font-semibold">{data.selectedYear}</h2>
+        <p class="text-xs uppercase tracking-[0.24em]">Grenar och poäng</p>
       </div>
-      <p class="text-sm">
-        Varje rad sparas separat så det blir snabbare att uppdatera från
-        mobilen.
-      </p>
     </div>
 
     <div class="mt-6 space-y-4">
@@ -251,7 +189,8 @@
                 rows="2"
                 placeholder="Beskrivning"
                 class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
-              >{row.description}</textarea>
+                >{row.description}</textarea
+              >
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -304,3 +243,270 @@
     </div>
   </section>
 </div>
+
+<SlidePanel
+  bind:open={showYearPanel}
+  label="Årspanel"
+  closeLabel="Stäng årspanel"
+  panelClass="fixed right-0 bottom-0 left-0 z-40 max-h-[82vh] overflow-y-auto rounded-t-4xl border border-border bg-surface/95 p-6 shadow-subtle backdrop-blur md:top-0 md:left-auto md:h-full md:max-h-none md:w-96 md:rounded-none md:border-l"
+>
+  <div class="flex items-center justify-between gap-4">
+    <div>
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        År
+      </p>
+      <h2 class="mt-2 text-2xl font-semibold text-text-primary">
+        Hantera spelår
+      </h2>
+    </div>
+
+    <button
+      type="button"
+      class="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary"
+      on:click={() => (showYearPanel = false)}
+    >
+      Stäng
+    </button>
+  </div>
+
+  <div class="mt-6">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Byt år
+    </p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {#each data.scoreboard?.years ?? [] as year}
+        <a
+          href={`/private?year=${year.year}`}
+          class={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+            data.selectedYear === year.year
+              ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
+              : "border-border bg-white text-text-primary hover:bg-secondary hover:scale-105"
+          }`}
+        >
+          {year.year}
+        </a>
+      {/each}
+      {#if (data.scoreboard?.years?.length ?? 0) === 0}
+        <span
+          class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+        >
+          Inga år ännu
+        </span>
+      {/if}
+    </div>
+  </div>
+
+  {#if data.currentYear}
+    <form
+      method="post"
+      action="?/deleteYear"
+      class="mt-6 border-t border-border pt-6"
+    >
+      <input type="hidden" name="year" value={data.selectedYear} />
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        Ta bort år
+      </p>
+      <button
+        type="submit"
+        class="mt-3 w-full rounded-full bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+        on:click={(event) => {
+          if (
+            !confirm(
+              `Ta bort året ${data.selectedYear}? Alla poängrader för året försvinner.`,
+            )
+          ) {
+            event.preventDefault();
+          }
+        }}
+      >
+        Ta bort {data.selectedYear}
+      </button>
+    </form>
+  {/if}
+
+  <form use:enhance method="post" action="?/addPerson" class="mt-8 space-y-3">
+    <input type="hidden" name="year" value={data.selectedYear} />
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Ny deltagare
+    </p>
+    <input
+      id="panel-name"
+      name="name"
+      type="text"
+      bind:value={newParticipantName}
+      placeholder="Skriv ett namn"
+      class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+    />
+    <button
+      disabled={!canAddParticipant}
+      class={`w-full rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+        canAddParticipant
+          ? "bg-primary text-text-secondary hover:scale-105 hover:bg-primary/90"
+          : "cursor-not-allowed bg-primary/40 text-text-secondary/70"
+      }`}
+    >
+      Spara och lägg till i {data.selectedYear}
+    </button>
+  </form>
+
+  <div class="mt-8 space-y-3">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Aktiva deltagare
+    </p>
+    <form
+      use:enhance={enhanceParticipants}
+      method="post"
+      action="?/setParticipants"
+      class="space-y-3"
+    >
+      <input type="hidden" name="year" value={data.selectedYear} />
+      {#each selectedParticipantIds as personId}
+        <input type="hidden" name="personId" value={personId} />
+      {/each}
+
+      <div class="flex flex-wrap gap-2">
+        {#each allPeople as person}
+          <button
+            type="button"
+            on:click={() => toggleParticipantSelection(person.id)}
+            class={`rounded-full border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+              selectedParticipantIds.includes(person.id)
+                ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
+                : "border-border bg-white text-text-primary hover:bg-secondary"
+            }`}
+          >
+            {person.name}
+          </button>
+        {/each}
+        {#if allPeople.length === 0}
+          <span
+            class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+          >
+            Inga sparade deltagare ännu
+          </span>
+        {/if}
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          disabled={!canSaveParticipants || isSavingParticipants}
+          class={`rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+            canSaveParticipants && !isSavingParticipants
+              ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+              : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
+          }`}
+        >
+          {#if isSavingParticipants}Sparar...{:else}Spara deltagare{/if}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <form
+    use:enhance
+    method="post"
+    action="?/createYear"
+    class="mt-8 space-y-3 border-t border-border pt-8"
+  >
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Nytt år
+    </p>
+    <input
+      name="year"
+      type="number"
+      bind:value={newYearValue}
+      inputmode="numeric"
+      min="2000"
+      max="9999"
+      step="1"
+      placeholder="2027"
+      class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+    />
+    <button
+      disabled={!canCreateYear}
+      class={`w-full rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+        canCreateYear
+          ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+          : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
+      }`}
+    >
+      Skapa år
+    </button>
+  </form>
+
+  <div class="mt-8 space-y-3 border-t border-border pt-8">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Ta bort deltagare
+    </p>
+    <div class="space-y-2">
+      {#each allPeople as person}
+        <form method="post" action="?/deletePerson" class="flex items-center gap-2">
+          <input type="hidden" name="year" value={data.selectedYear} />
+          <input type="hidden" name="personId" value={person.id} />
+          <div
+            class="flex-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+          >
+            {person.name}
+          </div>
+          <button
+            type="submit"
+            class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+            on:click={(event) => {
+              if (
+                !confirm(
+                  `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och poängrader.`,
+                )
+              ) {
+                event.preventDefault();
+              }
+            }}
+          >
+            Ta bort
+          </button>
+        </form>
+      {/each}
+      {#if allPeople.length === 0}
+        <p class="text-sm text-text-primary">Inga deltagare att ta bort.</p>
+      {/if}
+    </div>
+  </div>
+
+  <form
+    method="post"
+    action="?/logout"
+    class="mt-8 border-t border-border pt-4"
+  >
+    <button
+      class="inline-flex items-center gap-2 bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-text-secondary transition hover:scale-105"
+    >
+      Logga ut
+    </button>
+  </form>
+</SlidePanel>
+
+<button
+  type="button"
+  class="fixed right-5 bottom-5 z-30 inline-flex items-center gap-2 bg-primary px-4 py-2 text-xs font-semibold text-text-secondary shadow-subtle transition hover:scale-105 md:top-6 md:right-6 md:bottom-auto"
+  on:click={() => (showYearPanel = !showYearPanel)}
+  aria-expanded={showYearPanel}
+  aria-label="Öppna årspanel"
+>
+  <span class="text-base leading-none">☰</span>
+  <span class="hidden sm:inline"
+    >{showYearPanel ? "Stäng år" : data.selectedYear}</span
+  >
+</button>

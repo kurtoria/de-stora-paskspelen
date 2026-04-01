@@ -1,4 +1,4 @@
-import { get, head, put } from "@vercel/blob";
+import { get, put } from "@vercel/blob";
 import { env } from "$env/dynamic/private";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -113,7 +113,11 @@ const readBlobScoreboard = async (): Promise<ScoreboardStore | null> => {
     return null;
   }
 
-  const result = await get(blobPathname, { access: "private", token });
+  const result = await get(blobPathname, {
+    access: "private",
+    token,
+    useCache: false,
+  });
   if (!result || result.statusCode !== 200 || !result.stream) {
     return null;
   }
@@ -161,30 +165,11 @@ export const writeScoreboard = async (store: ScoreboardStore) => {
       return;
     }
 
-    let etag: string | undefined;
-
-    try {
-      const metadata = await head(blobPathname, { token });
-      etag = metadata.etag;
-    } catch (error) {
-      if (!(error instanceof Error)) {
-        throw error;
-      }
-
-      if (
-        error.name !== "BlobNotFoundError" &&
-        !error.message.includes("No token found")
-      ) {
-        throw error;
-      }
-    }
-
     try {
       await put(blobPathname, JSON.stringify(sanitized, null, 2), {
         access: "private",
         allowOverwrite: true,
         contentType: "application/json",
-        ifMatch: etag,
         token,
       });
       return;

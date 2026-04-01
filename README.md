@@ -23,3 +23,12 @@ You can preview the production build with `bun run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
 
+## TODO
+* Bättre översikt på poängrader
+* Bättre översikt över vem som leder
+* sortera på person som leder
+* cool animation på "De stora påskspelen"
+* byt namn på filter panel till menu
+* Flytta Data sparas i ... till menu
+* move "Året måste anges med fyra siffror." to menu
+

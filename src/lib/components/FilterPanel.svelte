@@ -1,4 +1,6 @@
 <script lang="ts">
+  import SlidePanel from "$lib/components/SlidePanel.svelte";
+
   export let showFilters = false;
   export let hasActiveFilters = false;
   export let allCategories: { id: string; name: string }[] = [];
@@ -47,21 +49,7 @@
 </button>
 
 {#if showFilters}
-  <button
-    type="button"
-    class="fixed inset-0 z-30 bg-black/30 backdrop-blur-sm"
-    aria-label="Stäng filter"
-    on:click={() => (showFilters = false)}
-  ></button>
-
-  <div
-    class="fixed bottom-0 right-0 left-0 z-30 max-h-[80vh] overflow-y-auto bg-surface/95 p-6 shadow-subtle backdrop-blur md:top-0 md:bottom-0 md:right-0 md:left-auto md:h-full md:max-h-none md:w-96 md:p-6 md:ring-1"
-    on:click|stopPropagation
-    on:keydown|stopPropagation
-    role="dialog"
-    aria-label="Filter"
-    tabindex="-1"
-  >
+  <SlidePanel bind:open={showFilters} label="Filter" closeLabel="Stäng filter">
     <div class="flex items-center justify-between">
       <p class="text-xs font-semibold uppercase tracking-wide text-text-secondary">
         Filter
@@ -210,5 +198,5 @@
         Privat info
       </a>
     </div>
-  </div>
+  </SlidePanel>
 {/if}
