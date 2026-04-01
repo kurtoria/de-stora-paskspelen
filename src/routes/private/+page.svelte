@@ -93,7 +93,7 @@
         <h2 class="text-2xl font-semibold">Ställning</h2>
       </div>
       <!-- TODO: sort participants based on score -->
-      <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="mt-6 grid gap-3">
         {#each sortedParticipants as person}
           <article
             class="rounded-3xl bg-text-primary px-4 py-4 text-secondary flex justify-between items-center"
@@ -130,13 +130,13 @@
           id="title"
           name="title"
           type="text"
-          placeholder="Till exempel Påskquiz"
+          placeholder="Titel"
           class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
         />
         <textarea
           name="description"
           rows="2"
-          placeholder="Valfri beskrivning"
+          placeholder="Beskrivning"
           class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
         ></textarea>
         <button
@@ -145,12 +145,6 @@
           Lägg till rad
         </button>
       </form>
-
-      <p class="mt-6 text-xs text-stone-500">
-        Data sparas i <code class="rounded bg-white px-2 py-1 text-[11px]"
-          >{data.dataPath}</code
-        >
-      </p>
     </div>
   </section>
 
@@ -175,7 +169,9 @@
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="rowId" value={row.id} />
 
-          <div class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start">
+          <div
+            class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start"
+          >
             <div class="space-y-2">
               <input
                 name="title"
@@ -198,7 +194,8 @@
                 <label
                   class="rounded-xl border border-border bg-white/80 px-3 py-2 text-text-primary"
                 >
-                  <span class="mb-1 block text-xs font-semibold leading-tight sm:text-sm"
+                  <span
+                    class="mb-1 block text-xs font-semibold leading-tight sm:text-sm"
                     >{person.name}</span
                   >
                   <input
@@ -450,70 +447,64 @@
     <p
       class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
     >
-      Redigera deltagare
+      Deltagare
     </p>
     <div class="space-y-2">
       {#each allPeople as person}
-        <form method="post" action="?/updatePerson" class="flex items-center gap-2">
+        <form
+          method="post"
+          action="?/updatePerson"
+          class="space-y-2"
+        >
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="personId" value={person.id} />
           <input
             name="name"
             type="text"
             value={person.name}
-            class="flex-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+            class="w-full rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
           />
-          <button
-            type="submit"
-            class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
-          >
-            Spara
-          </button>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+            >
+              Spara
+            </button>
+            <button
+              type="submit"
+              formaction="?/deletePerson"
+              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              on:click={(event) => {
+                if (
+                  !confirm(
+                    `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och poängrader.`,
+                  )
+                ) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              Ta bort
+            </button>
+          </div>
         </form>
       {/each}
       {#if allPeople.length === 0}
-        <p class="text-sm text-text-primary">Inga deltagare att redigera.</p>
+        <p class="text-sm text-text-primary">Inga deltagare ännu.</p>
       {/if}
     </div>
   </div>
 
-  <div class="mt-8 space-y-3 border-t border-border pt-8">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Ta bort deltagare
+  <div class="mt-8 border-t border-border pt-8">
+    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary">
+      Lagring
     </p>
-    <div class="space-y-2">
-      {#each allPeople as person}
-        <form method="post" action="?/deletePerson" class="flex items-center gap-2">
-          <input type="hidden" name="year" value={data.selectedYear} />
-          <input type="hidden" name="personId" value={person.id} />
-          <div
-            class="flex-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
-          >
-            {person.name}
-          </div>
-          <button
-            type="submit"
-            class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
-            on:click={(event) => {
-              if (
-                !confirm(
-                  `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och poängrader.`,
-                )
-              ) {
-                event.preventDefault();
-              }
-            }}
-          >
-            Ta bort
-          </button>
-        </form>
-      {/each}
-      {#if allPeople.length === 0}
-        <p class="text-sm text-text-primary">Inga deltagare att ta bort.</p>
-      {/if}
-    </div>
+    <p class="mt-3 text-xs text-text-primary">
+      Data sparas i <code class="rounded bg-white px-2 py-1 text-[11px]"
+        >{data.dataPath}</code
+      >
+    </p>
   </div>
 
   <form

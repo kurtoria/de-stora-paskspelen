@@ -1,7 +1,7 @@
 <script lang="ts">
   import SlidePanel from "$lib/components/SlidePanel.svelte";
 
-  export let showFilters = false;
+  export let showMenu = false;
   export let hasActiveFilters = false;
   export let allCategories: { id: string; name: string }[] = [];
   export let allSources: { id: string; name: string }[] = [];
@@ -37,22 +37,22 @@
 <button
   type="button"
   class="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 bg-primary px-4 py-2 text-xs font-semibold text-text-secondary shadow-subtle transition hover:scale-105 md:top-6 md:bottom-auto"
-  on:click={() => (showFilters = !showFilters)}
-  aria-expanded={showFilters}
-  aria-label="Filtermeny"
+  on:click={() => (showMenu = !showMenu)}
+  aria-expanded={showMenu}
+  aria-label="Meny"
 >
   <span class="text-base leading-none">☰</span>
-  <span class="hidden sm:inline">{showFilters ? "Stäng filter" : "Filter"}</span>
+  <span class="hidden sm:inline">{showMenu ? "Stäng meny" : "Meny"}</span>
   {#if hasActiveFilters}
     <span class="ml-1 inline-flex h-2 w-2 bg-secondary"></span>
   {/if}
 </button>
 
-{#if showFilters}
-  <SlidePanel bind:open={showFilters} label="Filter" closeLabel="Stäng filter">
+{#if showMenu}
+  <SlidePanel bind:open={showMenu} label="Meny" closeLabel="Stäng meny">
     <div class="flex items-center justify-between">
       <p class="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-        Filter
+        Meny
       </p>
       <div class="flex items-center gap-2">
         {#if hasActiveFilters}
@@ -67,7 +67,7 @@
         <button
           type="button"
           class=" bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-text-secondary transition hover:scale-105"
-          on:click={() => (showFilters = false)}
+          on:click={() => (showMenu = false)}
         >
           Stäng
         </button>

@@ -26,10 +26,6 @@ You can preview the production build with `bun run preview`.
 ## TODO
 * Bättre översikt på poängrader
 * Bättre översikt över vem som leder
-* sortera på person som leder
-* cool animation på "De stora påskspelen"
-* byt namn på filter panel till menu
-* Flytta Data sparas i ... till menu
 * move "Året måste anges med fyra siffror." to menu
 * Redigera deltagare and Ta bort deltagare on the same row?
 
