@@ -13,20 +13,41 @@
 
   let showYearPanel = false;
   let selectedParticipantIds = data.currentYear?.participantIds ?? [];
+  let selectedCompetitionTemplateIds = (data.currentYear?.competitions ?? [])
+    .map((competition) => competition.templateId)
+    .filter((templateId): templateId is string => Boolean(templateId));
   let newParticipantName = "";
   let newYearValue: string | number = "";
   let isSavingParticipants = false;
+  let isSavingCompetitions = false;
   let participantSelectionVersion = `${data.selectedYear}:${(data.currentYear?.participantIds ?? []).join(",")}`;
+  let competitionSelectionVersion = `${data.selectedYear}:${(data.currentYear?.competitions ?? [])
+    .map((competition) => competition.templateId ?? competition.id)
+    .join(",")}`;
 
   let allPeople = data.scoreboard?.people ?? [];
+  let allCompetitionTemplates = data.scoreboard?.competitionTemplates ?? [];
 
   $: allPeople = data.scoreboard?.people ?? [];
+  $: allCompetitionTemplates = data.scoreboard?.competitionTemplates ?? [];
   $: {
     const nextVersion = `${data.selectedYear}:${(data.currentYear?.participantIds ?? []).join(",")}`;
 
     if (nextVersion !== participantSelectionVersion) {
       selectedParticipantIds = data.currentYear?.participantIds ?? [];
       participantSelectionVersion = nextVersion;
+    }
+  }
+  $: {
+    const nextVersion = `${data.selectedYear}:${(data.currentYear?.competitions ?? [])
+      .map((competition) => competition.templateId ?? competition.id)
+      .join(",")}`;
+
+    if (nextVersion !== competitionSelectionVersion) {
+      selectedCompetitionTemplateIds = (data.currentYear?.competitions ?? [])
+        .map((competition) => competition.templateId)
+        .filter((templateId): templateId is string => Boolean(templateId));
+      competitionSelectionVersion = nextVersion;
     }
   }
 
@@ -36,11 +57,23 @@
       : [...selectedParticipantIds, personId];
   };
 
+  const toggleCompetitionSelection = (templateId: string) => {
+    selectedCompetitionTemplateIds = selectedCompetitionTemplateIds.includes(templateId)
+      ? selectedCompetitionTemplateIds.filter((id) => id !== templateId)
+      : [...selectedCompetitionTemplateIds, templateId];
+  };
+
   $: canAddParticipant = newParticipantName.trim().length > 0;
   $: canCreateYear = /^\d{4}$/.test(String(newYearValue ?? "").trim());
   $: canSaveParticipants =
     selectedParticipantIds.join(",") !==
     (data.currentYear?.participantIds ?? []).join(",");
+  $: canSaveCompetitions =
+    selectedCompetitionTemplateIds.join(",") !==
+    (data.currentYear?.competitions ?? [])
+      .map((competition) => competition.templateId)
+      .filter((templateId): templateId is string => Boolean(templateId))
+      .join(",");
   $: sortedParticipants = [...data.participants].sort((a, b) => {
     const scoreDifference = (data.totals[b.id] ?? 0) - (data.totals[a.id] ?? 0);
 
@@ -62,6 +95,36 @@
       }
 
       isSavingParticipants = false;
+    };
+  };
+
+  const enhanceCompetitions: SubmitFunction = () => {
+    isSavingCompetitions = true;
+
+    return async ({ result, update }) => {
+      if (result.type === "success") {
+        await update({ reset: false, invalidateAll: true });
+      } else {
+        await applyAction(result);
+      }
+
+      isSavingCompetitions = false;
+    };
+  };
+
+  const autosizeTextarea = (node: HTMLTextAreaElement) => {
+    const resize = () => {
+      node.style.height = "auto";
+      node.style.height = `${node.scrollHeight}px`;
+    };
+
+    resize();
+    node.addEventListener("input", resize);
+
+    return {
+      destroy() {
+        node.removeEventListener("input", resize);
+      },
     };
   };
 </script>
@@ -92,7 +155,6 @@
       <div>
         <h2 class="text-2xl font-semibold">Ställning</h2>
       </div>
-      <!-- TODO: sort participants based on score -->
       <div class="mt-6 grid gap-3">
         {#each sortedParticipants as person}
           <article
@@ -120,12 +182,11 @@
       <p
         class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500"
       >
-        Ny poängrad
+        Ny tävlingsgren
       </p>
 
-      <form method="post" action="?/addRow" class="mt-4 space-y-3">
+      <form method="post" action="?/addCompetitionTemplate" class="mt-4 space-y-3">
         <input type="hidden" name="year" value={data.selectedYear} />
-        <label class="block text-sm font-medium" for="title">Ny poängrad</label>
         <input
           id="title"
           name="title"
@@ -134,15 +195,16 @@
           class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
         />
         <textarea
+          use:autosizeTextarea
           name="description"
           rows="2"
           placeholder="Beskrivning"
-          class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
+          class="w-full resize-none overflow-hidden rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
         ></textarea>
         <button
           class="w-full rounded-full bg-accent px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
         >
-          Lägg till rad
+          Lägg till tävlingsgren
         </button>
       </form>
     </div>
@@ -160,14 +222,14 @@
     </div>
 
     <div class="mt-5 space-y-3">
-      {#each data.currentYear?.rows ?? [] as row}
+      {#each data.currentYear?.competitions ?? [] as competition}
         <form
           method="post"
-          action="?/updateRow"
+          action="?/updateCompetition"
           class="rounded-3xl border border-border bg-black/10 p-3 sm:p-4"
         >
           <input type="hidden" name="year" value={data.selectedYear} />
-          <input type="hidden" name="rowId" value={row.id} />
+          <input type="hidden" name="competitionId" value={competition.id} />
 
           <div
             class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start"
@@ -176,16 +238,17 @@
               <input
                 name="title"
                 type="text"
-                value={row.title}
+                value={competition.title}
                 placeholder="Rubrik"
                 class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
               />
               <textarea
+                use:autosizeTextarea
                 name="description"
                 rows="1"
                 placeholder="Beskrivning"
-                class="min-h-0 w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
-                >{row.description}</textarea
+                class="min-h-0 w-full resize-none overflow-hidden rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
+                >{competition.description}</textarea
               >
             </div>
 
@@ -202,7 +265,7 @@
                     name={`score:${person.id}`}
                     type="number"
                     inputmode="numeric"
-                    value={row.scores[person.id] ?? 0}
+                    value={competition.scores[person.id] ?? 0}
                     class="w-full rounded-lg border border-border px-2.5 py-2 text-base"
                   />
                 </label>
@@ -218,23 +281,13 @@
             </div>
           </div>
         </form>
-
-        <form method="post" action="?/deleteRow" class="-mt-1 flex justify-end">
-          <input type="hidden" name="year" value={data.selectedYear} />
-          <input type="hidden" name="rowId" value={row.id} />
-          <button
-            class="rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] transition"
-          >
-            Ta bort rad
-          </button>
-        </form>
       {/each}
 
-      {#if (data.currentYear?.rows.length ?? 0) === 0}
+      {#if (data.currentYear?.competitions.length ?? 0) === 0}
         <article
           class="rounded-3xl border border-dashed border-border px-4 py-8 text-center text-sm"
         >
-          Inga poängrader än. Lägg till första raden ovan.
+          Inga tävlingsgrenar än. Lägg till första tävlingsgrenen ovan.
         </article>
       {/if}
     </div>
@@ -315,7 +368,7 @@
         on:click={(event) => {
           if (
             !confirm(
-              `Ta bort året ${data.selectedYear}? Alla poängrader för året försvinner.`,
+              `Ta bort året ${data.selectedYear}? Alla tävlingsgrenar för året försvinner.`,
             )
           ) {
             event.preventDefault();
@@ -353,6 +406,61 @@
       Spara och lägg till i {data.selectedYear}
     </button>
   </form>
+
+  <div class="mt-8 space-y-3">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Aktiva grenar
+    </p>
+    <form
+      use:enhance={enhanceCompetitions}
+      method="post"
+      action="?/setActiveCompetitions"
+      class="space-y-3"
+    >
+      <input type="hidden" name="year" value={data.selectedYear} />
+      {#each selectedCompetitionTemplateIds as templateId}
+        <input type="hidden" name="competitionTemplateId" value={templateId} />
+      {/each}
+
+      <div class="flex flex-wrap gap-2">
+        {#each allCompetitionTemplates as competitionTemplate}
+          <button
+            type="button"
+            on:click={() => toggleCompetitionSelection(competitionTemplate.id)}
+            class={`rounded-full border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+              selectedCompetitionTemplateIds.includes(competitionTemplate.id)
+                ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
+                : "border-border bg-white text-text-primary hover:bg-secondary"
+            }`}
+          >
+            {competitionTemplate.title}
+          </button>
+        {/each}
+        {#if allCompetitionTemplates.length === 0}
+          <span
+            class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+          >
+            Inga sparade grenar ännu
+          </span>
+        {/if}
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          disabled={!canSaveCompetitions || isSavingCompetitions}
+          class={`rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+            canSaveCompetitions && !isSavingCompetitions
+              ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+              : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
+          }`}
+        >
+          {#if isSavingCompetitions}Sparar...{:else}Spara grenar{/if}
+        </button>
+      </div>
+    </form>
+  </div>
 
   <div class="mt-8 space-y-3">
     <p
@@ -441,6 +549,9 @@
     >
       Skapa år
     </button>
+    <p class="text-xs text-text-primary">
+      Nya år återanvänder de sparade tävlingsgrenarna, men börjar utan aktiva deltagare.
+    </p>
   </form>
 
   <div class="mt-8 space-y-3 border-t border-border pt-8">
@@ -478,7 +589,7 @@
               on:click={(event) => {
                 if (
                   !confirm(
-                    `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och poängrader.`,
+                    `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och tävlingsgrenar.`,
                   )
                 ) {
                   event.preventDefault();
@@ -492,6 +603,61 @@
       {/each}
       {#if allPeople.length === 0}
         <p class="text-sm text-text-primary">Inga deltagare ännu.</p>
+      {/if}
+    </div>
+  </div>
+
+  <div class="mt-8 space-y-3 border-t border-border pt-8">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
+      Grenar
+    </p>
+    <div class="space-y-3">
+      {#each allCompetitionTemplates as competitionTemplate}
+        <form method="post" action="?/updateCompetitionTemplate" class="space-y-2">
+          <input type="hidden" name="year" value={data.selectedYear} />
+          <input type="hidden" name="competitionTemplateId" value={competitionTemplate.id} />
+          <input
+            name="title"
+            type="text"
+            value={competitionTemplate.title}
+            class="w-full rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+          />
+          <textarea
+            use:autosizeTextarea
+            name="description"
+            rows="2"
+            class="w-full resize-none overflow-hidden rounded-2xl border border-border bg-white px-4 py-3 text-sm text-text-primary"
+          >{competitionTemplate.description}</textarea>
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+            >
+              Spara
+            </button>
+            <button
+              type="submit"
+              formaction="?/deleteCompetitionTemplate"
+              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              on:click={(event) => {
+                if (
+                  !confirm(
+                    `Ta bort grenen ${competitionTemplate.title}? Den försvinner från alla år.`,
+                  )
+                ) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              Ta bort
+            </button>
+          </div>
+        </form>
+      {/each}
+      {#if allCompetitionTemplates.length === 0}
+        <p class="text-sm text-text-primary">Inga grenar ännu.</p>
       {/if}
     </div>
   </div>

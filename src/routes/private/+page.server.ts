@@ -4,8 +4,9 @@ import {
   verifySessionToken,
 } from "$lib/server/private-auth";
 import {
+  cloneCompetitionTemplate,
+  createCompetitionTemplate,
   createPerson,
-  createRow,
   dataPath,
   ensureYear,
   findYear,
@@ -63,8 +64,8 @@ export const load = async ({ cookies, url }) => {
   const totals = Object.fromEntries(
     participants.map((participant) => [
       participant.id,
-      currentYear?.rows.reduce(
-        (sum, row) => sum + (row.scores[participant.id] ?? 0),
+      currentYear?.competitions.reduce(
+        (sum, competition) => sum + (competition.scores[participant.id] ?? 0),
         0,
       ) ?? 0,
     ]),
@@ -101,6 +102,9 @@ export const actions = {
 
     const year = ensureYear(store, yearValue);
     year.participantIds = [];
+    year.competitions = store.competitionTemplates.map((competition) =>
+      cloneCompetitionTemplate(competition, year.participantIds),
+    );
     normalizeYearScores(year);
     await writeScoreboard(store);
 
@@ -242,7 +246,7 @@ export const actions = {
       year: yearValue,
     };
   },
-  addRow: async ({ request, cookies, url }) => {
+  addCompetitionTemplate: async ({ request, cookies, url }) => {
     requireAuth(cookies);
     const form = await request.formData();
     const yearValue =
@@ -253,61 +257,147 @@ export const actions = {
     const description = String(form.get("description") ?? "").trim();
 
     if (!title) {
-      return fail(400, { error: "Skriv en rubrik för raden." });
+      return fail(400, { error: "Skriv ett namn för grenen." });
     }
+
+    const store = await readScoreboard();
+    const template = createCompetitionTemplate(title, description);
+    store.competitionTemplates.push(template);
+    const year = ensureYear(store, yearValue);
+    year.competitions.push(cloneCompetitionTemplate(template, year.participantIds));
+    await writeScoreboard(store);
+
+    throw redirect(303, `/private?year=${yearValue}`);
+  },
+  setActiveCompetitions: async ({ request, cookies, url }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue =
+      String(form.get("year") ?? "").trim() ||
+      url.searchParams.get("year") ||
+      getCurrentYear();
+    const selectedIds = form
+      .getAll("competitionTemplateId")
+      .map((value) => String(value).trim())
+      .filter(Boolean);
 
     const store = await readScoreboard();
     const year = ensureYear(store, yearValue);
-    year.rows.push(createRow(year.participantIds, title, description));
+    const templates = store.competitionTemplates.filter((competition) =>
+      selectedIds.includes(competition.id),
+    );
+    const existingCompetitionsByTemplateId = new Map(
+      year.competitions
+        .filter((competition) => competition.templateId)
+        .map((competition) => [competition.templateId as string, competition]),
+    );
+    year.competitions = templates.map(
+      (template) =>
+        existingCompetitionsByTemplateId.get(template.id) ??
+        cloneCompetitionTemplate(template, year.participantIds),
+    );
+    normalizeYearScores(year);
     await writeScoreboard(store);
 
-    throw redirect(303, `/private?year=${yearValue}`);
+    return {
+      success: true,
+      competitionTemplateIds: templates.map((template) => template.id),
+      year: yearValue,
+    };
   },
-  updateRow: async ({ request, cookies, url }) => {
+  updateCompetitionTemplate: async ({ request, cookies, url }) => {
     requireAuth(cookies);
     const form = await request.formData();
     const yearValue =
       String(form.get("year") ?? "").trim() ||
       url.searchParams.get("year") ||
       getCurrentYear();
-    const rowId = String(form.get("rowId") ?? "").trim();
+    const templateId = String(form.get("competitionTemplateId") ?? "").trim();
+    const title = String(form.get("title") ?? "").trim();
+    const description = String(form.get("description") ?? "").trim();
+
+    if (!title) {
+      return fail(400, { error: "Skriv ett namn för grenen." });
+    }
+
+    const store = await readScoreboard();
+    const template = store.competitionTemplates.find(
+      (competition) => competition.id === templateId,
+    );
+
+    if (!template) {
+      return fail(404, { error: "Grenen kunde inte hittas." });
+    }
+
+    template.title = title;
+    template.description = description;
+
+    for (const year of store.years) {
+      for (const competition of year.competitions) {
+        if (competition.templateId === templateId) {
+          competition.title = title;
+          competition.description = description;
+        }
+      }
+    }
+
+    await writeScoreboard(store);
+    throw redirect(303, `/private?year=${yearValue}`);
+  },
+  deleteCompetitionTemplate: async ({ request, cookies, url }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue =
+      String(form.get("year") ?? "").trim() ||
+      url.searchParams.get("year") ||
+      getCurrentYear();
+    const templateId = String(form.get("competitionTemplateId") ?? "").trim();
+
+    const store = await readScoreboard();
+    const templateExists = store.competitionTemplates.some(
+      (competition) => competition.id === templateId,
+    );
+
+    if (!templateExists) {
+      return fail(404, { error: "Grenen kunde inte hittas." });
+    }
+
+    store.competitionTemplates = store.competitionTemplates.filter(
+      (competition) => competition.id !== templateId,
+    );
+    for (const year of store.years) {
+      year.competitions = year.competitions.filter(
+        (competition) => competition.templateId !== templateId,
+      );
+    }
+
+    await writeScoreboard(store);
+    throw redirect(303, `/private?year=${yearValue}`);
+  },
+  updateCompetition: async ({ request, cookies, url }) => {
+    requireAuth(cookies);
+    const form = await request.formData();
+    const yearValue =
+      String(form.get("year") ?? "").trim() ||
+      url.searchParams.get("year") ||
+      getCurrentYear();
+    const competitionId = String(form.get("competitionId") ?? "").trim();
 
     const store = await readScoreboard();
     const year = findYear(store, yearValue);
-    const row = year?.rows.find((entry) => entry.id === rowId);
+    const competition = year?.competitions.find((entry) => entry.id === competitionId);
 
-    if (!year || !row) {
-      return fail(404, { error: "Raden kunde inte hittas." });
+    if (!year || !competition) {
+      return fail(404, { error: "Tävlingsgrenen kunde inte hittas." });
     }
 
-    row.title = String(form.get("title") ?? "").trim();
-    row.description = String(form.get("description") ?? "").trim();
+    competition.title = String(form.get("title") ?? "").trim();
+    competition.description = String(form.get("description") ?? "").trim();
 
     for (const participantId of year.participantIds) {
       const rawValue = String(form.get(`score:${participantId}`) ?? "").trim();
-      row.scores[participantId] = rawValue === "" ? 0 : Number(rawValue) || 0;
+      competition.scores[participantId] = rawValue === "" ? 0 : Number(rawValue) || 0;
     }
-
-    await writeScoreboard(store);
-    throw redirect(303, `/private?year=${yearValue}`);
-  },
-  deleteRow: async ({ request, cookies, url }) => {
-    requireAuth(cookies);
-    const form = await request.formData();
-    const yearValue =
-      String(form.get("year") ?? "").trim() ||
-      url.searchParams.get("year") ||
-      getCurrentYear();
-    const rowId = String(form.get("rowId") ?? "").trim();
-
-    const store = await readScoreboard();
-    const year = findYear(store, yearValue);
-
-    if (!year) {
-      return fail(404, { error: "Året kunde inte hittas." });
-    }
-
-    year.rows = year.rows.filter((row) => row.id !== rowId);
     await writeScoreboard(store);
     throw redirect(303, `/private?year=${yearValue}`);
   },

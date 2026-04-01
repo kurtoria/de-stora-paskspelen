@@ -9,22 +9,50 @@ export type ScorePerson = {
   name: string;
 };
 
-export type ScoreRow = {
+export type ScoreCompetition = {
   id: string;
+  templateId?: string | null;
   title: string;
   description: string;
   scores: Record<string, number>;
 };
 
+export type ScoreCompetitionTemplate = {
+  id: string;
+  title: string;
+  description: string;
+};
+
 export type ScoreYear = {
   year: string;
   participantIds: string[];
-  rows: ScoreRow[];
+  competitions: ScoreCompetition[];
 };
 
 export type ScoreboardStore = {
   people: ScorePerson[];
+  competitionTemplates: ScoreCompetitionTemplate[];
   years: ScoreYear[];
+};
+
+type RawStore = {
+  people?: unknown;
+  competitionTemplates?: unknown;
+  years?: unknown;
+};
+
+type RawYear = {
+  year?: unknown;
+  participantIds?: unknown;
+  competitions?: unknown;
+};
+
+type RawCompetition = {
+  id?: unknown;
+  templateId?: unknown;
+  title?: unknown;
+  description?: unknown;
+  scores?: unknown;
 };
 
 const dataDirectory = path.resolve(process.cwd(), "data");
@@ -41,50 +69,118 @@ const usesBlobStorage = () => Boolean(getBlobToken());
 
 const defaultStore = (): ScoreboardStore => ({
   people: [],
+  competitionTemplates: [],
   years: [],
 });
 
-const sanitizeStore = (store: ScoreboardStore): ScoreboardStore => ({
-  people: Array.isArray(store.people)
+const sanitizeStore = (store: RawStore): ScoreboardStore => {
+  const people = Array.isArray(store.people)
     ? store.people
-        .filter((person) => person && typeof person.id === "string" && typeof person.name === "string")
+        .filter(
+          (person) =>
+            person &&
+            typeof person === "object" &&
+            typeof (person as ScorePerson).id === "string" &&
+            typeof (person as ScorePerson).name === "string",
+        )
         .map((person) => ({
-          id: person.id,
-          name: person.name.trim(),
+          id: (person as ScorePerson).id,
+          name: (person as ScorePerson).name.trim(),
         }))
         .filter((person) => person.name.length > 0)
-    : [],
-  years: Array.isArray(store.years)
+    : [];
+
+  const sanitizedYears = Array.isArray(store.years)
     ? store.years
-        .filter((year) => year && typeof year.year === "string")
-        .map((year) => ({
-          year: year.year.trim(),
-          participantIds: Array.isArray(year.participantIds)
-            ? [...new Set(year.participantIds.filter((value) => typeof value === "string"))]
-            : [],
-          rows: Array.isArray(year.rows)
-            ? year.rows
-                .filter((row) => row && typeof row.id === "string")
-                .map((row) => ({
-                  id: row.id,
-                  title: typeof row.title === "string" ? row.title.trim() : "",
+        .filter(
+          (year) =>
+            year &&
+            typeof year === "object" &&
+            typeof (year as RawYear).year === "string",
+        )
+        .map((year) => {
+          const rawYear = year as RawYear;
+          const rawCompetitions = Array.isArray(rawYear.competitions)
+            ? rawYear.competitions
+            : [];
+
+          return {
+            year: String(rawYear.year ?? "").trim(),
+            participantIds: Array.isArray(rawYear.participantIds)
+              ? [
+                  ...new Set(
+                    rawYear.participantIds.filter(
+                      (value): value is string => typeof value === "string",
+                    ),
+                  ),
+                ]
+              : [],
+            competitions: rawCompetitions
+              .filter(
+                (competition) =>
+                  competition &&
+                  typeof competition === "object" &&
+                  typeof (competition as RawCompetition).id === "string",
+              )
+              .map((competition) => {
+                const rawCompetition = competition as RawCompetition;
+
+                return {
+                  id: String(rawCompetition.id),
+                  templateId:
+                    typeof rawCompetition.templateId === "string" &&
+                    rawCompetition.templateId.trim().length > 0
+                      ? rawCompetition.templateId.trim()
+                      : null,
+                  title:
+                    typeof rawCompetition.title === "string"
+                      ? rawCompetition.title.trim()
+                      : "",
                   description:
-                    typeof row.description === "string" ? row.description.trim() : "",
+                    typeof rawCompetition.description === "string"
+                      ? rawCompetition.description.trim()
+                      : "",
                   scores:
-                    row.scores && typeof row.scores === "object"
+                    rawCompetition.scores &&
+                    typeof rawCompetition.scores === "object"
                       ? Object.fromEntries(
-                          Object.entries(row.scores)
+                          Object.entries(rawCompetition.scores)
                             .filter(([personId]) => typeof personId === "string")
                             .map(([personId, score]) => [personId, Number(score) || 0]),
                         )
                       : {},
-                }))
-            : [],
-        }))
+                };
+              }),
+          };
+        })
         .filter((year) => year.year.length > 0)
         .sort((left, right) => left.year.localeCompare(right.year, "sv"))
-    : [],
-});
+    : [];
+
+  const competitionTemplates = Array.isArray(store.competitionTemplates)
+    ? store.competitionTemplates
+    .filter(
+      (competition) =>
+        competition &&
+        typeof competition === "object" &&
+        typeof (competition as ScoreCompetitionTemplate).id === "string" &&
+        typeof (competition as ScoreCompetitionTemplate).title === "string" &&
+        typeof (competition as ScoreCompetitionTemplate).description === "string",
+    )
+    .map((competition) => ({
+      id: (competition as ScoreCompetitionTemplate).id.trim(),
+      title: (competition as ScoreCompetitionTemplate).title.trim(),
+      description: (competition as ScoreCompetitionTemplate).description.trim(),
+    }))
+    .filter((competition) => competition.id.length > 0 && competition.title.length > 0)
+    : [];
+
+  return {
+    people,
+    competitionTemplates,
+    years: sanitizedYears,
+  };
+};
 
 const ensureStoreFile = async () => {
   await mkdir(dataDirectory, { recursive: true });
@@ -101,7 +197,7 @@ const readLocalScoreboard = async (): Promise<ScoreboardStore> => {
   const raw = await readFile(dataFilePath, "utf8");
 
   try {
-    return sanitizeStore(JSON.parse(raw) as ScoreboardStore);
+    return sanitizeStore(JSON.parse(raw) as RawStore);
   } catch {
     return defaultStore();
   }
@@ -125,7 +221,7 @@ const readBlobScoreboard = async (): Promise<ScoreboardStore | null> => {
   const raw = await new Response(result.stream).text();
 
   try {
-    return sanitizeStore(JSON.parse(raw) as ScoreboardStore);
+    return sanitizeStore(JSON.parse(raw) as RawStore);
   } catch {
     return defaultStore();
   }
@@ -196,7 +292,7 @@ export const ensureYear = (store: ScoreboardStore, yearValue: string) => {
   const year: ScoreYear = {
     year: yearValue,
     participantIds: [],
-    rows: [],
+    competitions: [],
   };
 
   store.years.push(year);
@@ -209,24 +305,50 @@ export const createPerson = (name: string): ScorePerson => ({
   name: name.trim(),
 });
 
-export const createRow = (participantIds: string[], title = "", description = ""): ScoreRow => ({
+export const createCompetition = (
+  participantIds: string[],
+  title = "",
+  description = "",
+  templateId: string | null = null,
+): ScoreCompetition => ({
   id: createId(),
+  templateId,
   title: title.trim(),
   description: description.trim(),
   scores: Object.fromEntries(participantIds.map((participantId) => [participantId, 0])),
 });
 
+export const cloneCompetitionTemplate = (
+  competition: Pick<ScoreCompetitionTemplate, "id" | "title" | "description">,
+  participantIds: string[],
+): ScoreCompetition =>
+  createCompetition(
+    participantIds,
+    competition.title,
+    competition.description,
+    competition.id,
+  );
+
+export const createCompetitionTemplate = (
+  title: string,
+  description = "",
+): ScoreCompetitionTemplate => ({
+  id: createId(),
+  title: title.trim(),
+  description: description.trim(),
+});
+
 export const normalizeYearScores = (year: ScoreYear) => {
-  for (const row of year.rows) {
+  for (const competition of year.competitions) {
     for (const participantId of year.participantIds) {
-      if (!(participantId in row.scores)) {
-        row.scores[participantId] = 0;
+      if (!(participantId in competition.scores)) {
+        competition.scores[participantId] = 0;
       }
     }
 
-    for (const personId of Object.keys(row.scores)) {
+    for (const personId of Object.keys(competition.scores)) {
       if (!year.participantIds.includes(personId)) {
-        delete row.scores[personId];
+        delete competition.scores[personId];
       }
     }
   }
