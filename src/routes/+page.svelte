@@ -48,9 +48,6 @@
           </p>
         {:else}
           <form method="post" action="?/login" class="mt-6 space-y-4">
-            <!-- <label class="block text-sm font-medium" for="password"
-              >Lösenord</label
-            > -->
             <input
               id="password"
               name="password"

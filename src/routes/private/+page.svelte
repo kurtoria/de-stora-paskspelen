@@ -237,7 +237,6 @@
             class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start"
           >
             <div class="space-y-2">
-              <!-- TODO: leave it be -->
               <!-- <input
                 name="title"
                 type="text"
@@ -249,7 +248,6 @@
               <p class="text-sm">
                 {competition.description}
               </p>
-              <!-- TODO: leave it be -->
               <!-- <textarea
                 use:autosizeTextarea
                 name="description"
