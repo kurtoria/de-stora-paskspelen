@@ -21,7 +21,9 @@
   let isSavingParticipants = false;
   let isSavingCompetitions = false;
   let participantSelectionVersion = `${data.selectedYear}:${(data.currentYear?.participantIds ?? []).join(",")}`;
-  let competitionSelectionVersion = `${data.selectedYear}:${(data.currentYear?.competitions ?? [])
+  let competitionSelectionVersion = `${data.selectedYear}:${(
+    data.currentYear?.competitions ?? []
+  )
     .map((competition) => competition.templateId ?? competition.id)
     .join(",")}`;
 
@@ -39,7 +41,9 @@
     }
   }
   $: {
-    const nextVersion = `${data.selectedYear}:${(data.currentYear?.competitions ?? [])
+    const nextVersion = `${data.selectedYear}:${(
+      data.currentYear?.competitions ?? []
+    )
       .map((competition) => competition.templateId ?? competition.id)
       .join(",")}`;
 
@@ -58,7 +62,9 @@
   };
 
   const toggleCompetitionSelection = (templateId: string) => {
-    selectedCompetitionTemplateIds = selectedCompetitionTemplateIds.includes(templateId)
+    selectedCompetitionTemplateIds = selectedCompetitionTemplateIds.includes(
+      templateId,
+    )
       ? selectedCompetitionTemplateIds.filter((id) => id !== templateId)
       : [...selectedCompetitionTemplateIds, templateId];
   };
@@ -142,23 +148,21 @@
 
   {#if form?.error}
     <p
-      class="mb-4 rounded-2xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
+      class="mb-4 border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
     >
       {form.error}
     </p>
   {/if}
 
   <section class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-    <div
-      class="rounded-4xl border border-border p-4 shadow-sm backdrop-blur sm:p-6"
-    >
+    <div class=" border border-border p-4 shadow-sm backdrop-blur sm:p-6">
       <div>
         <h2 class="text-2xl font-semibold">Ställning</h2>
       </div>
       <div class="mt-6 grid gap-3">
         {#each sortedParticipants as person}
           <article
-            class="rounded-3xl bg-text-primary px-4 py-4 text-secondary flex justify-between items-center"
+            class=" bg-text-primary px-4 py-4 text-secondary flex justify-between items-center"
           >
             <h2 class="text-xl font-semibold">{person.name}</h2>
             <p class="text-xl font-semibold">
@@ -168,7 +172,7 @@
         {/each}
         {#if sortedParticipants.length === 0}
           <article
-            class="rounded-3xl border border-dashed border-border px-4 py-4 text-sm"
+            class=" border border-dashed border-border px-4 py-4 text-sm"
           >
             Lägg till deltagare för att börja räkna poäng.
           </article>
@@ -177,7 +181,7 @@
     </div>
 
     <div
-      class="rounded-4xl border border-border bg-panel p-4 text-stone-900 shadow-sm sm:p-6"
+      class=" border border-border bg-panel p-4 text-stone-900 shadow-sm sm:p-6"
     >
       <p
         class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500"
@@ -185,24 +189,28 @@
         Ny tävlingsgren
       </p>
 
-      <form method="post" action="?/addCompetitionTemplate" class="mt-4 space-y-3">
+      <form
+        method="post"
+        action="?/addCompetitionTemplate"
+        class="mt-4 space-y-3"
+      >
         <input type="hidden" name="year" value={data.selectedYear} />
         <input
           id="title"
           name="title"
           type="text"
           placeholder="Titel"
-          class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
+          class="w-full border border-stone-300 bg-white px-4 py-3 text-base"
         />
         <textarea
           use:autosizeTextarea
           name="description"
           rows="2"
           placeholder="Beskrivning"
-          class="w-full resize-none overflow-hidden rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
+          class="w-full resize-none overflow-hidden border border-stone-300 bg-white px-4 py-3 text-base"
         ></textarea>
         <button
-          class="w-full rounded-full bg-accent px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
+          class="w-full bg-accent px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
         >
           Lägg till tävlingsgren
         </button>
@@ -211,7 +219,7 @@
   </section>
 
   <section
-    class="mt-8 rounded-4xl border border-border bg-white/5 p-4 shadow-sm backdrop-blur sm:p-6"
+    class="mt-8 border border-border bg-white/5 p-4 shadow-sm backdrop-blur sm:p-6"
   >
     <div
       class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
@@ -226,7 +234,7 @@
         <form
           method="post"
           action="?/updateCompetition"
-          class="rounded-3xl border border-border bg-black/10 p-3 sm:p-4"
+          class=" border border-border bg-black/10 p-3 sm:p-4"
         >
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="competitionId" value={competition.id} />
@@ -240,14 +248,14 @@
                 type="text"
                 value={competition.title}
                 placeholder="Rubrik"
-                class="w-full rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
+                class="w-full border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
               />
               <textarea
                 use:autosizeTextarea
                 name="description"
                 rows="1"
                 placeholder="Beskrivning"
-                class="min-h-0 w-full resize-none overflow-hidden rounded-xl border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
+                class="min-h-0 w-full resize-none overflow-hidden border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
                 >{competition.description}</textarea
               >
             </div>
@@ -255,7 +263,7 @@
             <div class="grid grid-cols-2 gap-2 xl:grid-cols-3">
               {#each data.participants as person}
                 <label
-                  class="rounded-xl border border-border bg-white/80 px-3 py-2 text-text-primary"
+                  class=" border border-border bg-white/80 px-3 py-2 text-text-primary"
                 >
                   <span
                     class="mb-1 block text-xs font-semibold leading-tight sm:text-sm"
@@ -266,7 +274,7 @@
                     type="number"
                     inputmode="numeric"
                     value={competition.scores[person.id] ?? 0}
-                    class="w-full rounded-lg border border-border px-2.5 py-2 text-base"
+                    class="w-full border border-border px-2.5 py-2 text-base"
                   />
                 </label>
               {/each}
@@ -274,7 +282,7 @@
 
             <div class="flex gap-2 lg:flex-col lg:self-stretch">
               <button
-                class="flex-1 rounded-full bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary"
+                class="flex-1 bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary"
               >
                 Spara
               </button>
@@ -285,7 +293,7 @@
 
       {#if (data.currentYear?.competitions.length ?? 0) === 0}
         <article
-          class="rounded-3xl border border-dashed border-border px-4 py-8 text-center text-sm"
+          class=" border border-dashed border-border px-4 py-8 text-center text-sm"
         >
           Inga tävlingsgrenar än. Lägg till första tävlingsgrenen ovan.
         </article>
@@ -314,7 +322,7 @@
 
     <button
       type="button"
-      class="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary"
+      class=" bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary"
       on:click={() => (showYearPanel = false)}
     >
       Stäng
@@ -331,7 +339,7 @@
       {#each data.scoreboard?.years ?? [] as year}
         <a
           href={`/private?year=${year.year}`}
-          class={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+          class={` border px-4 py-2 text-sm font-semibold transition ${
             data.selectedYear === year.year
               ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
               : "border-border bg-white text-text-primary hover:bg-secondary hover:scale-105"
@@ -342,7 +350,7 @@
       {/each}
       {#if (data.scoreboard?.years?.length ?? 0) === 0}
         <span
-          class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+          class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
         >
           Inga år ännu
         </span>
@@ -364,7 +372,7 @@
       </p>
       <button
         type="submit"
-        class="mt-3 w-full rounded-full bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+        class="mt-3 w-full bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
         on:click={(event) => {
           if (
             !confirm(
@@ -393,11 +401,11 @@
       type="text"
       bind:value={newParticipantName}
       placeholder="Skriv ett namn"
-      class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+      class="w-full border border-border bg-white px-4 py-3 text-base text-text-primary"
     />
     <button
       disabled={!canAddParticipant}
-      class={`w-full rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+      class={`w-full  px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
         canAddParticipant
           ? "bg-primary text-text-secondary hover:scale-105 hover:bg-primary/90"
           : "cursor-not-allowed bg-primary/40 text-text-secondary/70"
@@ -429,7 +437,7 @@
           <button
             type="button"
             on:click={() => toggleCompetitionSelection(competitionTemplate.id)}
-            class={`rounded-full border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+            class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
               selectedCompetitionTemplateIds.includes(competitionTemplate.id)
                 ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
                 : "border-border bg-white text-text-primary hover:bg-secondary"
@@ -440,7 +448,7 @@
         {/each}
         {#if allCompetitionTemplates.length === 0}
           <span
-            class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+            class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
           >
             Inga sparade grenar ännu
           </span>
@@ -450,7 +458,7 @@
       <div class="flex items-center gap-3">
         <button
           disabled={!canSaveCompetitions || isSavingCompetitions}
-          class={`rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+          class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
             canSaveCompetitions && !isSavingCompetitions
               ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
               : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
@@ -484,7 +492,7 @@
           <button
             type="button"
             on:click={() => toggleParticipantSelection(person.id)}
-            class={`rounded-full border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+            class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
               selectedParticipantIds.includes(person.id)
                 ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
                 : "border-border bg-white text-text-primary hover:bg-secondary"
@@ -495,7 +503,7 @@
         {/each}
         {#if allPeople.length === 0}
           <span
-            class="rounded-full border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+            class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
           >
             Inga sparade deltagare ännu
           </span>
@@ -505,7 +513,7 @@
       <div class="flex items-center gap-3">
         <button
           disabled={!canSaveParticipants || isSavingParticipants}
-          class={`rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+          class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
             canSaveParticipants && !isSavingParticipants
               ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
               : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
@@ -537,11 +545,11 @@
       max="9999"
       step="1"
       placeholder="2027"
-      class="w-full rounded-2xl border border-border bg-white px-4 py-3 text-base text-text-primary"
+      class="w-full border border-border bg-white px-4 py-3 text-base text-text-primary"
     />
     <button
       disabled={!canCreateYear}
-      class={`w-full rounded-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+      class={`w-full  px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
         canCreateYear
           ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
           : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
@@ -550,7 +558,8 @@
       Skapa år
     </button>
     <p class="text-xs text-text-primary">
-      Nya år återanvänder de sparade tävlingsgrenarna, men börjar utan aktiva deltagare.
+      Nya år återanvänder de sparade tävlingsgrenarna, men börjar utan aktiva
+      deltagare.
     </p>
   </form>
 
@@ -562,30 +571,26 @@
     </p>
     <div class="space-y-2">
       {#each allPeople as person}
-        <form
-          method="post"
-          action="?/updatePerson"
-          class="space-y-2"
-        >
+        <form method="post" action="?/updatePerson" class="space-y-2">
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="personId" value={person.id} />
           <input
             name="name"
             type="text"
             value={person.name}
-            class="w-full rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+            class="w-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
           />
           <div class="flex flex-wrap gap-2">
             <button
               type="submit"
-              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
             >
               Spara
             </button>
             <button
               type="submit"
               formaction="?/deletePerson"
-              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
               on:click={(event) => {
                 if (
                   !confirm(
@@ -615,32 +620,41 @@
     </p>
     <div class="space-y-3">
       {#each allCompetitionTemplates as competitionTemplate}
-        <form method="post" action="?/updateCompetitionTemplate" class="space-y-2">
+        <form
+          method="post"
+          action="?/updateCompetitionTemplate"
+          class="space-y-2"
+        >
           <input type="hidden" name="year" value={data.selectedYear} />
-          <input type="hidden" name="competitionTemplateId" value={competitionTemplate.id} />
+          <input
+            type="hidden"
+            name="competitionTemplateId"
+            value={competitionTemplate.id}
+          />
           <input
             name="title"
             type="text"
             value={competitionTemplate.title}
-            class="w-full rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+            class="w-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
           />
           <textarea
             use:autosizeTextarea
             name="description"
             rows="2"
-            class="w-full resize-none overflow-hidden rounded-2xl border border-border bg-white px-4 py-3 text-sm text-text-primary"
-          >{competitionTemplate.description}</textarea>
+            class="w-full resize-none overflow-hidden border border-border bg-white px-4 py-3 text-sm text-text-primary"
+            >{competitionTemplate.description}</textarea
+          >
           <div class="flex flex-wrap gap-2">
             <button
               type="submit"
-              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
             >
               Spara
             </button>
             <button
               type="submit"
               formaction="?/deleteCompetitionTemplate"
-              class="rounded-full bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
               on:click={(event) => {
                 if (
                   !confirm(
@@ -663,7 +677,9 @@
   </div>
 
   <div class="mt-8 border-t border-border pt-8">
-    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary">
+    <p
+      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+    >
       Lagring
     </p>
     <p class="mt-3 text-xs text-text-primary">

@@ -37,7 +37,7 @@
   <section class="flex min-h-screen items-center px-4 py-8 sm:px-6">
     <div class="mx-auto w-full max-w-6xl">
       <div
-        class="mx-auto max-w-xl rounded-4xl border border-border bg-panel p-6 text-stone-900 shadow-subtle sm:p-8"
+        class="mx-auto max-w-xl border border-border bg-panel p-6 text-stone-900 shadow-subtle sm:p-8"
       >
         <h2 class="text-2xl font-semibold">Inloggning</h2>
 
@@ -48,22 +48,23 @@
           </p>
         {:else}
           <form method="post" action="?/login" class="mt-6 space-y-4">
-            <label class="block text-sm font-medium" for="password"
+            <!-- <label class="block text-sm font-medium" for="password"
               >Lösenord</label
-            >
+            > -->
             <input
               id="password"
               name="password"
               type="password"
               aria-label="Lösenord"
+              placeholder="Lösenord"
               autocomplete="current-password"
-              class="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-base"
+              class="w-full border border-stone-300 bg-white px-4 py-3 text-base"
             />
             {#if form?.error}
               <p class="text-sm text-red-600">{form.error}</p>
             {/if}
             <button
-              class="w-full rounded-full bg-primary px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary"
+              class="w-full bg-primary px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary"
             >
               Logga in
             </button>
