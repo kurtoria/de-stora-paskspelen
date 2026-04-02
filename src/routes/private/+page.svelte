@@ -180,12 +180,8 @@
       </div>
     </div>
 
-    <div
-      class=" border border-border bg-panel p-4 text-stone-900 shadow-sm sm:p-6"
-    >
-      <p
-        class="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500"
-      >
+    <div class=" border border-border p-4 shadow-sm sm:p-6 text-text-primary">
+      <p class="text-xs font-semibold uppercase tracking-[0.24em]">
         Ny tävlingsgren
       </p>
 
@@ -210,7 +206,7 @@
           class="w-full resize-none overflow-hidden border border-stone-300 bg-white px-4 py-3 text-base"
         ></textarea>
         <button
-          class="w-full bg-accent px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white"
+          class="w-full bg-accent px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:scale-105 hover:opacity-90"
         >
           Lägg till tävlingsgren
         </button>
@@ -225,7 +221,9 @@
       class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
     >
       <div>
-        <p class="text-xs uppercase tracking-[0.24em]">Grenar och poäng</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.24em]">
+          Grenar och poäng
+        </p>
       </div>
     </div>
 
@@ -234,7 +232,7 @@
         <form
           method="post"
           action="?/updateCompetition"
-          class=" border border-border bg-black/10 p-3 sm:p-4"
+          class=" border border-border p-3 sm:p-4"
         >
           <input type="hidden" name="year" value={data.selectedYear} />
           <input type="hidden" name="competitionId" value={competition.id} />
@@ -282,7 +280,7 @@
 
             <div class="flex gap-2 lg:flex-col lg:self-stretch">
               <button
-                class="flex-1 bg-secondary px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary"
+                class="flex-1 px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] transition hover:scale-105 bg-primary text-text-secondary"
               >
                 Spara
               </button>
