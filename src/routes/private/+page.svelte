@@ -181,9 +181,7 @@
     </div>
 
     <div class=" border border-border p-4 shadow-sm sm:p-6 text-text-primary">
-      <p class="text-xs font-semibold uppercase tracking-[0.24em]">
-        Ny tävlingsgren
-      </p>
+      <h3 class="text-xl font-semibold">Ny tävlingsgren</h3>
 
       <form
         method="post"
@@ -221,9 +219,7 @@
       class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between"
     >
       <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.24em]">
-          Grenar och poäng
-        </p>
+        <h3 class="text-xl font-semibold">Grenar och poäng</h3>
       </div>
     </div>
 
@@ -241,25 +237,33 @@
             class="grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_auto] lg:items-start"
           >
             <div class="space-y-2">
-              <input
+              <!-- TODO: leave it be -->
+              <!-- <input
                 name="title"
                 type="text"
                 value={competition.title}
                 placeholder="Rubrik"
                 class="w-full border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
-              />
-              <textarea
+              /> -->
+              <h4 class="text-lg font-semibold">{competition.title}</h4>
+              <p class="text-sm">
+                {competition.description}
+              </p>
+              <!-- TODO: leave it be -->
+              <!-- <textarea
                 use:autosizeTextarea
                 name="description"
                 rows="1"
                 placeholder="Beskrivning"
                 class="min-h-0 w-full resize-none overflow-hidden border border-border bg-white px-3 py-2.5 text-sm text-text-primary sm:text-base"
                 >{competition.description}</textarea
-              >
+              > -->
             </div>
 
             <div class="grid grid-cols-2 gap-2 xl:grid-cols-3">
-              {#each data.participants as person}
+              {#each data.participants
+                .slice()
+                .sort((a, b) => a.name.localeCompare(b.name, "sv")) as person}
                 <label
                   class=" border border-border bg-white/80 px-3 py-2 text-text-primary"
                 >
@@ -304,7 +308,7 @@
   bind:open={showYearPanel}
   label="Årspanel"
   closeLabel="Stäng årspanel"
-  panelClass="fixed right-0 bottom-0 left-0 z-40 max-h-[82vh] overflow-y-auto rounded-t-4xl border border-border bg-surface/95 p-6 shadow-subtle backdrop-blur md:top-0 md:left-auto md:h-full md:max-h-none md:w-96 md:rounded-none md:border-l"
+  panelClass="fixed right-0 bottom-0 left-0 z-40 max-h-[82vh] overflow-y-auto  border border-border bg-surface/95 p-6 shadow-subtle backdrop-blur md:top-0 md:left-auto md:h-full md:max-h-none md:w-96  md:border-l"
 >
   <div class="flex items-center justify-between gap-4">
     <div>
@@ -320,207 +324,256 @@
 
     <button
       type="button"
-      class=" bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary"
+      class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
       on:click={() => (showYearPanel = false)}
     >
       Stäng
     </button>
   </div>
 
-  <div class="mt-6">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Byt år
-    </p>
-    <div class="mt-3 flex flex-wrap gap-2">
-      {#each data.scoreboard?.years ?? [] as year}
-        <a
-          href={`/private?year=${year.year}`}
-          class={` border px-4 py-2 text-sm font-semibold transition ${
-            data.selectedYear === year.year
-              ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
-              : "border-border bg-white text-text-primary hover:bg-secondary hover:scale-105"
-          }`}
-        >
-          {year.year}
-        </a>
-      {/each}
-      {#if (data.scoreboard?.years?.length ?? 0) === 0}
-        <span
-          class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
-        >
-          Inga år ännu
-        </span>
-      {/if}
-    </div>
-  </div>
-
-  {#if data.currentYear}
-    <form
-      method="post"
-      action="?/deleteYear"
-      class="mt-6 border-t border-border pt-6"
-    >
-      <input type="hidden" name="year" value={data.selectedYear} />
+  <div class="mt-6 space-y-8">
+    <div class="space-y-3">
       <p
         class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
       >
-        Ta bort år
+        Nuvarande år
       </p>
-      <button
-        type="submit"
-        class="mt-3 w-full bg-white px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
-        on:click={(event) => {
-          if (
-            !confirm(
-              `Ta bort året ${data.selectedYear}? Alla tävlingsgrenar för året försvinner.`,
-            )
-          ) {
-            event.preventDefault();
-          }
-        }}
-      >
-        Ta bort {data.selectedYear}
-      </button>
-    </form>
-  {/if}
-
-  <form use:enhance method="post" action="?/addPerson" class="mt-8 space-y-3">
-    <input type="hidden" name="year" value={data.selectedYear} />
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Ny deltagare
-    </p>
-    <input
-      id="panel-name"
-      name="name"
-      type="text"
-      bind:value={newParticipantName}
-      placeholder="Skriv ett namn"
-      class="w-full border border-border bg-white px-4 py-3 text-base text-text-primary"
-    />
-    <button
-      disabled={!canAddParticipant}
-      class={`w-full  px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-        canAddParticipant
-          ? "bg-primary text-text-secondary hover:scale-105 hover:bg-primary/90"
-          : "cursor-not-allowed bg-primary/40 text-text-secondary/70"
-      }`}
-    >
-      Spara och lägg till i {data.selectedYear}
-    </button>
-  </form>
-
-  <div class="mt-8 space-y-3">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Aktiva grenar
-    </p>
-    <form
-      use:enhance={enhanceCompetitions}
-      method="post"
-      action="?/setActiveCompetitions"
-      class="space-y-3"
-    >
-      <input type="hidden" name="year" value={data.selectedYear} />
-      {#each selectedCompetitionTemplateIds as templateId}
-        <input type="hidden" name="competitionTemplateId" value={templateId} />
-      {/each}
-
       <div class="flex flex-wrap gap-2">
-        {#each allCompetitionTemplates as competitionTemplate}
-          <button
-            type="button"
-            on:click={() => toggleCompetitionSelection(competitionTemplate.id)}
-            class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
-              selectedCompetitionTemplateIds.includes(competitionTemplate.id)
+        {#each data.scoreboard?.years ?? [] as year}
+          <a
+            href={`/private?year=${year.year}`}
+            class={` border px-4 py-2 text-sm font-semibold transition ${
+              data.selectedYear === year.year
                 ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
-                : "border-border bg-white text-text-primary hover:bg-secondary"
+                : "border-border bg-white text-text-primary hover:bg-secondary hover:scale-105"
             }`}
           >
-            {competitionTemplate.title}
-          </button>
+            {year.year}
+          </a>
         {/each}
-        {#if allCompetitionTemplates.length === 0}
+        {#if (data.scoreboard?.years?.length ?? 0) === 0}
           <span
             class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
           >
-            Inga sparade grenar ännu
+            Inga år ännu
           </span>
         {/if}
       </div>
+    </div>
 
-      <div class="flex items-center gap-3">
-        <button
-          disabled={!canSaveCompetitions || isSavingCompetitions}
-          class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-            canSaveCompetitions && !isSavingCompetitions
-              ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
-              : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
-          }`}
+    <div class="space-y-3">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        Aktiva tävlingsgrenar
+      </p>
+      <form
+        use:enhance={enhanceCompetitions}
+        method="post"
+        action="?/setActiveCompetitions"
+        class="space-y-3"
+      >
+        <input type="hidden" name="year" value={data.selectedYear} />
+        {#each selectedCompetitionTemplateIds as templateId}
+          <input
+            type="hidden"
+            name="competitionTemplateId"
+            value={templateId}
+          />
+        {/each}
+
+        <div class="flex flex-wrap gap-2">
+          {#each allCompetitionTemplates as competitionTemplate}
+            <button
+              type="button"
+              on:click={() =>
+                toggleCompetitionSelection(competitionTemplate.id)}
+              class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+                selectedCompetitionTemplateIds.includes(competitionTemplate.id)
+                  ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
+                  : "border-border bg-white text-text-primary hover:bg-secondary"
+              }`}
+            >
+              {competitionTemplate.title}
+            </button>
+          {/each}
+          {#if allCompetitionTemplates.length === 0}
+            <span
+              class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+            >
+              Inga sparade tävlingsgrenar ännu
+            </span>
+          {/if}
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            disabled={!canSaveCompetitions || isSavingCompetitions}
+            class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+              canSaveCompetitions && !isSavingCompetitions
+                ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+                : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
+            }`}
+          >
+            {#if isSavingCompetitions}Sparar...{:else}Spara tävlingsgrenar{/if}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="space-y-3">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        Aktiva deltagare
+      </p>
+      <form
+        use:enhance={enhanceParticipants}
+        method="post"
+        action="?/setParticipants"
+        class="space-y-3"
+      >
+        <input type="hidden" name="year" value={data.selectedYear} />
+        {#each selectedParticipantIds as personId}
+          <input type="hidden" name="personId" value={personId} />
+        {/each}
+
+        <div class="flex flex-wrap gap-2">
+          {#each allPeople as person}
+            <button
+              type="button"
+              on:click={() => toggleParticipantSelection(person.id)}
+              class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
+                selectedParticipantIds.includes(person.id)
+                  ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
+                  : "border-border bg-white text-text-primary hover:bg-secondary"
+              }`}
+            >
+              {person.name}
+            </button>
+          {/each}
+          {#if allPeople.length === 0}
+            <span
+              class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
+            >
+              Inga sparade deltagare ännu
+            </span>
+          {/if}
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            disabled={!canSaveParticipants || isSavingParticipants}
+            class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+              canSaveParticipants && !isSavingParticipants
+                ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+                : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
+            }`}
+          >
+            {#if isSavingParticipants}Sparar...{:else}Spara deltagare{/if}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    {#if data.currentYear}
+      <form method="post" action="?/deleteYear" class="space-y-3">
+        <input type="hidden" name="year" value={data.selectedYear} />
+        <p
+          class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
         >
-          {#if isSavingCompetitions}Sparar...{:else}Spara grenar{/if}
+          Ta bort år
+        </p>
+        <button
+          type="submit"
+          class="w-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+          on:click={(event) => {
+            if (
+              !confirm(
+                `Ta bort året ${data.selectedYear}? Årets poäng och aktiva tävlingsgrenar försvinner, men de sparade tävlingsgrenarna finns kvar.`,
+              )
+            ) {
+              event.preventDefault();
+            }
+          }}
+        >
+          Ta bort {data.selectedYear}
         </button>
-      </div>
-    </form>
+      </form>
+    {/if}
   </div>
 
-  <div class="mt-8 space-y-3">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Aktiva deltagare
-    </p>
-    <form
-      use:enhance={enhanceParticipants}
-      method="post"
-      action="?/setParticipants"
-      class="space-y-3"
-    >
-      <input type="hidden" name="year" value={data.selectedYear} />
-      {#each selectedParticipantIds as personId}
-        <input type="hidden" name="personId" value={personId} />
-      {/each}
-
-      <div class="flex flex-wrap gap-2">
-        {#each allPeople as person}
-          <button
-            type="button"
-            on:click={() => toggleParticipantSelection(person.id)}
-            class={` border px-4 py-2 text-sm font-semibold transition hover:scale-105 ${
-              selectedParticipantIds.includes(person.id)
-                ? "border-primary bg-primary text-text-secondary hover:bg-primary/90"
-                : "border-border bg-white text-text-primary hover:bg-secondary"
-            }`}
-          >
-            {person.name}
-          </button>
-        {/each}
-        {#if allPeople.length === 0}
-          <span
-            class=" border border-dashed border-border px-4 py-2 text-sm text-text-primary"
-          >
-            Inga sparade deltagare ännu
-          </span>
-        {/if}
-      </div>
-
-      <div class="flex items-center gap-3">
+  <div class="mt-8 space-y-8 border-t border-border pt-8">
+    <div class="space-y-3">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        Deltagare
+      </p>
+      <form use:enhance method="post" action="?/addPerson" class="space-y-3">
+        <input type="hidden" name="year" value={data.selectedYear} />
+        <input
+          id="panel-name"
+          name="name"
+          type="text"
+          bind:value={newParticipantName}
+          placeholder="Skriv ett namn"
+          class="w-full border border-border bg-white px-4 py-3 text-base text-text-primary"
+        />
         <button
-          disabled={!canSaveParticipants || isSavingParticipants}
-          class={` px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
-            canSaveParticipants && !isSavingParticipants
+          disabled={!canAddParticipant}
+          class={`w-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+            canAddParticipant
               ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
               : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
           }`}
         >
-          {#if isSavingParticipants}Sparar...{:else}Spara deltagare{/if}
+          Spara och lägg till i {data.selectedYear}
         </button>
+      </form>
+
+      <div class="space-y-3">
+        {#each allPeople as person}
+          <form method="post" action="?/updatePerson" class="space-y-2">
+            <input type="hidden" name="year" value={data.selectedYear} />
+            <input type="hidden" name="personId" value={person.id} />
+            <input
+              name="name"
+              type="text"
+              value={person.name}
+              class="w-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
+            />
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="submit"
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+              >
+                Spara
+              </button>
+              <button
+                type="submit"
+                formaction="?/deletePerson"
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+                on:click={(event) => {
+                  if (
+                    !confirm(
+                      `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och tävlingsgrenar.`,
+                    )
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+              >
+                Ta bort
+              </button>
+            </div>
+          </form>
+        {/each}
+        {#if allPeople.length === 0}
+          <p class="text-sm text-text-primary">Inga deltagare ännu.</p>
+        {/if}
       </div>
-    </form>
+    </div>
   </div>
 
   <form
@@ -547,7 +600,7 @@
     />
     <button
       disabled={!canCreateYear}
-      class={`w-full  px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+      class={`w-full px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
         canCreateYear
           ? "bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
           : "cursor-not-allowed bg-secondary/50 text-text-primary/50"
@@ -561,62 +614,13 @@
     </p>
   </form>
 
-  <div class="mt-8 space-y-3 border-t border-border pt-8">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Deltagare
-    </p>
-    <div class="space-y-2">
-      {#each allPeople as person}
-        <form method="post" action="?/updatePerson" class="space-y-2">
-          <input type="hidden" name="year" value={data.selectedYear} />
-          <input type="hidden" name="personId" value={person.id} />
-          <input
-            name="name"
-            type="text"
-            value={person.name}
-            class="w-full border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary"
-          />
-          <div class="flex flex-wrap gap-2">
-            <button
-              type="submit"
-              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
-            >
-              Spara
-            </button>
-            <button
-              type="submit"
-              formaction="?/deletePerson"
-              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
-              on:click={(event) => {
-                if (
-                  !confirm(
-                    `Ta bort deltagaren ${person.name}? Personen försvinner från alla år och tävlingsgrenar.`,
-                  )
-                ) {
-                  event.preventDefault();
-                }
-              }}
-            >
-              Ta bort
-            </button>
-          </div>
-        </form>
-      {/each}
-      {#if allPeople.length === 0}
-        <p class="text-sm text-text-primary">Inga deltagare ännu.</p>
-      {/if}
-    </div>
-  </div>
-
-  <div class="mt-8 space-y-3 border-t border-border pt-8">
-    <p
-      class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
-    >
-      Grenar
-    </p>
+  <div class="mt-8 space-y-8 border-t border-border pt-8">
     <div class="space-y-3">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
+      >
+        Tävlingsgrenar
+      </p>
       {#each allCompetitionTemplates as competitionTemplate}
         <form
           method="post"
@@ -645,18 +649,18 @@
           <div class="flex flex-wrap gap-2">
             <button
               type="submit"
-              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
             >
               Spara
             </button>
             <button
               type="submit"
               formaction="?/deleteCompetitionTemplate"
-              class=" bg-white px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-text-primary transition hover:bg-secondary"
+              class="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
               on:click={(event) => {
                 if (
                   !confirm(
-                    `Ta bort grenen ${competitionTemplate.title}? Den försvinner från alla år.`,
+                    `Ta bort tävlingsgrenen ${competitionTemplate.title}? Den försvinner från alla år.`,
                   )
                 ) {
                   event.preventDefault();
@@ -669,35 +673,31 @@
         </form>
       {/each}
       {#if allCompetitionTemplates.length === 0}
-        <p class="text-sm text-text-primary">Inga grenar ännu.</p>
+        <p class="text-sm text-text-primary">Inga tävlingsgrenar ännu.</p>
       {/if}
     </div>
   </div>
 
-  <div class="mt-8 border-t border-border pt-8">
+  <div class="mt-8 space-y-4 border-t border-border pt-8">
     <p
       class="text-xs font-semibold uppercase tracking-[0.24em] text-text-secondary"
     >
       Lagring
     </p>
-    <p class="mt-3 text-xs text-text-primary">
-      Data sparas i <code class="rounded bg-white px-2 py-1 text-[11px]"
+    <p class="text-xs text-text-primary">
+      Data sparas i <code class=" bg-white px-2 py-1 text-[11px]"
         >{data.dataPath}</code
       >
     </p>
-  </div>
 
-  <form
-    method="post"
-    action="?/logout"
-    class="mt-8 border-t border-border pt-4"
-  >
-    <button
-      class="inline-flex items-center gap-2 bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-text-secondary transition hover:scale-105"
-    >
-      Logga ut
-    </button>
-  </form>
+    <form method="post" action="?/logout">
+      <button
+        class="inline-flex items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+      >
+        Logga ut
+      </button>
+    </form>
+  </div>
 </SlidePanel>
 
 <button

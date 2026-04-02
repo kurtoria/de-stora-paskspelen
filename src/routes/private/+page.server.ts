@@ -257,7 +257,7 @@ export const actions = {
     const description = String(form.get("description") ?? "").trim();
 
     if (!title) {
-      return fail(400, { error: "Skriv ett namn för grenen." });
+      return fail(400, { error: "Skriv ett namn för tävlingsgrenen." });
     }
 
     const store = await readScoreboard();
@@ -317,7 +317,7 @@ export const actions = {
     const description = String(form.get("description") ?? "").trim();
 
     if (!title) {
-      return fail(400, { error: "Skriv ett namn för grenen." });
+      return fail(400, { error: "Skriv ett namn för tävlingsgrenen." });
     }
 
     const store = await readScoreboard();
@@ -326,7 +326,7 @@ export const actions = {
     );
 
     if (!template) {
-      return fail(404, { error: "Grenen kunde inte hittas." });
+      return fail(404, { error: "Tävlingsgrenen kunde inte hittas." });
     }
 
     template.title = title;
@@ -359,7 +359,7 @@ export const actions = {
     );
 
     if (!templateExists) {
-      return fail(404, { error: "Grenen kunde inte hittas." });
+      return fail(404, { error: "Tävlingsgrenen kunde inte hittas." });
     }
 
     store.competitionTemplates = store.competitionTemplates.filter(
