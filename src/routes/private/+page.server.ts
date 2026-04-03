@@ -4,14 +4,17 @@ import {
   verifySessionToken,
 } from "$lib/server/private-auth";
 import {
+  backupPath,
   cloneCompetitionTemplate,
   createCompetitionTemplate,
   createPerson,
   dataPath,
   ensureYear,
   findYear,
+  listLocalScoreboardBackups,
   normalizeYearScores,
   readScoreboard,
+  usesRemoteScoreboardStorage,
   writeScoreboard,
 } from "$lib/server/scoreboard";
 import type { ScoreYear } from "$lib/server/scoreboard";
@@ -48,6 +51,7 @@ const requireAuth = (cookies: { get: (name: string) => string | undefined }) => 
 
 export const load = async ({ cookies, url }) => {
   requireAuth(cookies);
+  const usesRemoteStorage = usesRemoteScoreboardStorage();
   const scoreboard = await readScoreboard();
   const selectedYear = getSelectedYear({
     requestedYear: url.searchParams.get("year"),
@@ -72,6 +76,9 @@ export const load = async ({ cookies, url }) => {
   );
 
   return {
+    backupFiles: usesRemoteStorage ? [] : await listLocalScoreboardBackups(),
+    backupMode: usesRemoteStorage ? "download" : "local",
+    backupPath,
     currentYear,
     dataPath,
     participants,

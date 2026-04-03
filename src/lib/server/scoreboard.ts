@@ -1,7 +1,8 @@
+import { dev } from "$app/environment";
 import { get, put } from "@vercel/blob";
 import { env } from "$env/dynamic/private";
 import { randomUUID } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 export type ScorePerson = {
@@ -57,6 +58,7 @@ type RawCompetition = {
 
 const dataDirectory = path.resolve(process.cwd(), "data");
 const dataFilePath = path.join(dataDirectory, "scoreboard.json");
+const backupDirectory = path.join(dataDirectory, "backups");
 const blobPathname = "scoreboard/scoreboard.json";
 
 const createId = () => randomUUID();
@@ -192,6 +194,20 @@ const ensureStoreFile = async () => {
   }
 };
 
+const formatBackupTimestamp = (date: Date) =>
+  `${[
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0"),
+  ].join("-")}_${[
+    String(date.getHours()).padStart(2, "0"),
+    String(date.getMinutes()).padStart(2, "0"),
+    String(date.getSeconds()).padStart(2, "0"),
+  ].join("-")}`;
+
+export const createBackupFilename = (date = new Date()) =>
+  `scoreboard-${formatBackupTimestamp(date)}.json`;
+
 const readLocalScoreboard = async (): Promise<ScoreboardStore> => {
   await ensureStoreFile();
   const raw = await readFile(dataFilePath, "utf8");
@@ -280,6 +296,29 @@ export const writeScoreboard = async (store: ScoreboardStore) => {
   await writeFile(dataFilePath, JSON.stringify(sanitized, null, 2), "utf8");
 };
 
+export const createScoreboardBackup = async (store: ScoreboardStore) => {
+  const sanitized = sanitizeStore(store);
+  await mkdir(backupDirectory, { recursive: true });
+  const backupFilePath = path.join(backupDirectory, createBackupFilename());
+  await writeFile(backupFilePath, JSON.stringify(sanitized, null, 2), "utf8");
+  return backupFilePath;
+};
+
+export const listLocalScoreboardBackups = async (limit = 5) => {
+  try {
+    await mkdir(backupDirectory, { recursive: true });
+    const entries = await readdir(backupDirectory, { withFileTypes: true });
+
+    return entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+      .map((entry) => entry.name)
+      .sort((left, right) => right.localeCompare(left, "sv"))
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
+};
+
 export const findYear = (store: ScoreboardStore, yearValue: string) =>
   store.years.find((year) => year.year === yearValue);
 
@@ -357,3 +396,6 @@ export const normalizeYearScores = (year: ScoreYear) => {
 export const dataPath = usesBlobStorage()
   ? `vercel-blob:private/${blobPathname}`
   : dataFilePath;
+
+export const backupPath = backupDirectory;
+export const usesRemoteScoreboardStorage = () => !dev;

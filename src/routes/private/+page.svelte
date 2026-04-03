@@ -751,6 +751,36 @@
         >{data.dataPath}</code
       >
     </p>
+    {#if data.backupMode === "local"}
+      <p class="text-xs text-text-primary">
+        Backuper sparas i <code class=" bg-white px-2 py-1 text-[11px]"
+          >{data.backupPath}</code
+        >
+      </p>
+      {#if data.backupFiles.length > 0}
+        <div class="space-y-2">
+          <p class="text-xs text-text-primary">Senaste backuper:</p>
+          <ul class="space-y-1 text-xs text-text-primary">
+            {#each data.backupFiles as backupFile}
+              <li>
+                <code class="bg-white px-2 py-1 text-[11px]">{backupFile}</code>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+    {:else}
+      <p class="text-xs text-text-primary">
+        Backup laddas ner som en JSON-fil i webbläsaren.
+      </p>
+    {/if}
+
+    <a
+      href={`/private/backup?year=${data.selectedYear}`}
+      class="inline-flex items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition bg-secondary text-text-primary hover:scale-105 hover:bg-primary hover:text-text-secondary"
+    >
+      {data.backupMode === "local" ? "Skapa backup" : "Ladda ner backup"}
+    </a>
 
     <form method="post" action="?/logout">
       <button

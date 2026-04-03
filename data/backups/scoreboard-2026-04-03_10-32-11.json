@@ -1,0 +1,257 @@
+{
+  "people": [
+    {
+      "id": "82106eef-0fab-47fb-a9cd-6275c7e35531",
+      "name": "Laura"
+    },
+    {
+      "id": "47e1fb76-17e4-406c-bdb4-2509150e91c6",
+      "name": "Dase"
+    },
+    {
+      "id": "f74d2f3a-441e-4737-95e7-98d95c28a042",
+      "name": "Buster"
+    },
+    {
+      "id": "15f94994-d65e-47da-a73f-d4faf5898ea5",
+      "name": "Lilla fredspipan"
+    },
+    {
+      "id": "da0455bb-5bd7-4202-9f91-76e7f1182e84",
+      "name": "Lill-Börje"
+    }
+  ],
+  "competitionTemplates": [
+    {
+      "id": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+      "title": "Sten, sax & påse",
+      "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras."
+    },
+    {
+      "id": "56732b2f-e172-4ae8-ae23-6d7ae7ca0e1b",
+      "title": "Vikta rätt",
+      "description": "Kan ni era uppskattningar? På 2 minuter ska vi hitta saker som tillsammans väger exakt 1,4 kg. Närmast vinner."
+    },
+    {
+      "id": "6f686158-5e1c-465e-b4a5-9735dfa6f64e",
+      "title": "Måtta rätt",
+      "description": "Hur långt är en meter? På en minut ska vi uppskatta en meter. Närmast vinner"
+    },
+    {
+      "id": "9577c002-fe0a-413e-932a-55e7057fdc15",
+      "title": "Super smash bros",
+      "description": "Personen på täppan och så vidare."
+    },
+    {
+      "id": "7e0ea865-0b38-4a7a-8bcb-b4365916ab96",
+      "title": "Läggdags",
+      "description": "Är långa ben en fördel? Är korta ben en fördel? Hoppsasteg, längdhopp eller klassiska sjumilakliv. På hur få steg kan du ta dig från utgångspunkten till sängen?"
+    },
+    {
+      "id": "1fa4f43c-4721-4224-b61d-d3cfc3446de4",
+      "title": "Skära frukt",
+      "description": "Ta en kniv, skär en frukt itu. Se ditt resultat, blev det jämnt nu?"
+    },
+    {
+      "id": "8527dda0-3045-4b26-ae23-bad05158337b",
+      "title": "Sprut i bytta",
+      "description": "Välj nu spruta, kör varsin tur.\r\nFyll upp bytta, tills det rinner ur."
+    },
+    {
+      "id": "b5221a28-3561-44d8-ad19-ec38ffea6e4d",
+      "title": "Mental minut",
+      "description": "Hur lång är en minut? Tryck på knappen när den är slut!"
+    },
+    {
+      "id": "a3aa1b7b-0fe1-4405-8c4e-da6d6e5b943f",
+      "title": "Knowledge is power",
+      "description": "En DSP-klassiker, ni vet vad som gäller. Knowledge is power."
+    },
+    {
+      "id": "fb3c7404-e1e6-45e7-b913-98bbea23acf9",
+      "title": "Drawful",
+      "description": "Hur kreativ är du i din konst? Dags för skissa och gissa!"
+    },
+    {
+      "id": "0424fa83-f1ef-45b8-86f2-cfef04c71a72",
+      "title": "Jägarställning",
+      "description": "90 grader, du kan lita på mig, du kan lita på mig."
+    }
+  ],
+  "years": [
+    {
+      "year": "2000",
+      "participantIds": [
+        "82106eef-0fab-47fb-a9cd-6275c7e35531",
+        "47e1fb76-17e4-406c-bdb4-2509150e91c6"
+      ],
+      "competitions": [
+        {
+          "id": "a41c465b-14f6-4c3f-8686-1bea9009f700",
+          "templateId": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+          "title": "Sten, sax & påse",
+          "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 3,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 2
+          }
+        }
+      ]
+    },
+    {
+      "year": "2026",
+      "participantIds": [
+        "82106eef-0fab-47fb-a9cd-6275c7e35531",
+        "47e1fb76-17e4-406c-bdb4-2509150e91c6",
+        "f74d2f3a-441e-4737-95e7-98d95c28a042",
+        "15f94994-d65e-47da-a73f-d4faf5898ea5",
+        "da0455bb-5bd7-4202-9f91-76e7f1182e84"
+      ],
+      "competitions": [
+        {
+          "id": "b1a92728-ea84-476f-a8fe-b5741b131a9e",
+          "templateId": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+          "title": "Sten, sax & påse",
+          "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "476e7186-0845-4304-9e45-e2491809f3c1",
+          "templateId": "56732b2f-e172-4ae8-ae23-6d7ae7ca0e1b",
+          "title": "Vikta rätt",
+          "description": "Kan ni era uppskattningar? På 2 minuter ska vi hitta saker som tillsammans väger exakt 1,4 kg. Närmast vinner.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "a3c7f720-5eed-49b3-bfa7-dafc2ced2ae0",
+          "templateId": "6f686158-5e1c-465e-b4a5-9735dfa6f64e",
+          "title": "Måtta rätt",
+          "description": "Hur långt är en meter? På en minut ska vi uppskatta en meter. Närmast vinner",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "b48b90ab-9f91-4bc6-8467-d094a888ab2b",
+          "templateId": "9577c002-fe0a-413e-932a-55e7057fdc15",
+          "title": "Super smash bros",
+          "description": "Personen på täppan och så vidare.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "22d887ce-5e73-46c5-8f1b-6c52fa46b626",
+          "templateId": "7e0ea865-0b38-4a7a-8bcb-b4365916ab96",
+          "title": "Läggdags",
+          "description": "Är långa ben en fördel? Är korta ben en fördel? Hoppsasteg, längdhopp eller klassiska sjumilakliv. På hur få steg kan du ta dig från utgångspunkten till sängen?",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "de09970a-569e-4779-a04c-a7b490349872",
+          "templateId": "1fa4f43c-4721-4224-b61d-d3cfc3446de4",
+          "title": "Skära frukt",
+          "description": "Ta en kniv, skär en frukt itu. Se ditt resultat, blev det jämnt nu?",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "d14fef3c-e139-4b0d-a1f9-a96258be34c7",
+          "templateId": "8527dda0-3045-4b26-ae23-bad05158337b",
+          "title": "Sprut i bytta",
+          "description": "Välj nu spruta, kör varsin tur.\r\nFyll upp bytta, tills det rinner ur.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "78e179fd-1af0-46fe-abac-b62918ada982",
+          "templateId": "b5221a28-3561-44d8-ad19-ec38ffea6e4d",
+          "title": "Mental minut",
+          "description": "Hur lång är en minut? Tryck på knappen när den är slut!",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "65d919ba-15b5-4e57-a5b7-093def928e28",
+          "templateId": "a3aa1b7b-0fe1-4405-8c4e-da6d6e5b943f",
+          "title": "Knowledge is power",
+          "description": "En DSP-klassiker, ni vet vad som gäller. Knowledge is power.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "422cc11f-2a93-4c47-ad32-c55bbd85bd36",
+          "templateId": "fb3c7404-e1e6-45e7-b913-98bbea23acf9",
+          "title": "Drawful",
+          "description": "Hur kreativ är du i din konst? Dags för skissa och gissa!",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        },
+        {
+          "id": "34d70c55-3761-4e2b-9103-b7cd71ad4df7",
+          "templateId": "0424fa83-f1ef-45b8-86f2-cfef04c71a72",
+          "title": "Jägarställning",
+          "description": "90 grader, du kan lita på mig, du kan lita på mig.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0,
+            "da0455bb-5bd7-4202-9f91-76e7f1182e84": 0
+          }
+        }
+      ]
+    }
+  ]
+}
