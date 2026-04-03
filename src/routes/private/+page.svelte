@@ -29,6 +29,12 @@
 
   let allPeople = data.scoreboard?.people ?? [];
   let allCompetitionTemplates = data.scoreboard?.competitionTemplates ?? [];
+  let sortedAllPeople = [...allPeople];
+  let competitionByTemplateId = new Map<string, { scores: Record<string, number> }>();
+  let sortedCompetitions = data.currentYear?.competitions ?? [];
+  let sortedCompetitionTemplates = allCompetitionTemplates;
+  let totalCompetitionCount = 0;
+  let playedCompetitionCount = 0;
 
   $: allPeople = data.scoreboard?.people ?? [];
   $: allCompetitionTemplates = data.scoreboard?.competitionTemplates ?? [];
@@ -69,6 +75,20 @@
       : [...selectedCompetitionTemplateIds, templateId];
   };
 
+  const compareByName = (
+    left: { name: string },
+    right: { name: string },
+  ) => left.name.localeCompare(right.name, "sv");
+
+  const compareByTitle = (
+    left: { title: string },
+    right: { title: string },
+  ) => left.title.localeCompare(right.title, "sv");
+
+  const competitionHasScore = (competition: {
+    scores: Record<string, number>;
+  }) => Object.values(competition.scores).some((score) => score !== 0);
+
   $: canAddParticipant = newParticipantName.trim().length > 0;
   $: canCreateYear = /^\d{4}$/.test(String(newYearValue ?? "").trim());
   $: canSaveParticipants =
@@ -89,6 +109,47 @@
 
     return a.name.localeCompare(b.name, "sv");
   });
+  $: sortedAllPeople = [...allPeople].sort(compareByName);
+  $: competitionByTemplateId = new Map(
+    (data.currentYear?.competitions ?? [])
+      .filter((competition) => competition.templateId)
+      .map((competition) => [competition.templateId as string, competition]),
+  );
+  $: sortedCompetitions = [...(data.currentYear?.competitions ?? [])].sort(
+    (a, b) => {
+      const hasScoreDifference =
+        Number(competitionHasScore(a)) - Number(competitionHasScore(b));
+
+      if (hasScoreDifference !== 0) {
+        return hasScoreDifference;
+      }
+
+      return compareByTitle(a, b);
+    },
+  );
+  $: sortedCompetitionTemplates = [...allCompetitionTemplates].sort((a, b) => {
+    const hasScoreDifference =
+      Number(
+        competitionHasScore(
+          competitionByTemplateId.get(a.id) ?? { scores: {} },
+        ),
+      ) -
+      Number(
+        competitionHasScore(
+          competitionByTemplateId.get(b.id) ?? { scores: {} },
+        ),
+      );
+
+    if (hasScoreDifference !== 0) {
+      return hasScoreDifference;
+    }
+
+    return compareByTitle(a, b);
+  });
+  $: totalCompetitionCount = data.currentYear?.competitions.length ?? 0;
+  $: playedCompetitionCount = (data.currentYear?.competitions ?? []).filter(
+    competitionHasScore,
+  ).length;
 
   const enhanceParticipants: SubmitFunction = () => {
     isSavingParticipants = true;
@@ -156,8 +217,11 @@
 
   <section class="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
     <div class=" border border-border p-4 shadow-sm backdrop-blur sm:p-6">
-      <div>
+      <div class="flex items-end justify-between gap-3">
         <h2 class="text-2xl font-semibold">Ställning</h2>
+        <h4 class=" font-semibold">
+          {playedCompetitionCount}/{totalCompetitionCount}
+        </h4>
       </div>
       <div class="mt-6 grid gap-3">
         {#each sortedParticipants as person}
@@ -224,7 +288,7 @@
     </div>
 
     <div class="mt-5 space-y-3">
-      {#each data.currentYear?.competitions ?? [] as competition}
+      {#each sortedCompetitions as competition}
         <form
           method="post"
           action="?/updateCompetition"
@@ -381,7 +445,7 @@
         {/each}
 
         <div class="flex flex-wrap gap-2">
-          {#each allCompetitionTemplates as competitionTemplate}
+          {#each sortedCompetitionTemplates as competitionTemplate}
             <button
               type="button"
               on:click={() =>
@@ -437,7 +501,7 @@
         {/each}
 
         <div class="flex flex-wrap gap-2">
-          {#each allPeople as person}
+          {#each sortedAllPeople as person}
             <button
               type="button"
               on:click={() => toggleParticipantSelection(person.id)}
@@ -531,7 +595,7 @@
       </form>
 
       <div class="space-y-3">
-        {#each allPeople as person}
+        {#each sortedAllPeople as person}
           <form method="post" action="?/updatePerson" class="space-y-2">
             <input type="hidden" name="year" value={data.selectedYear} />
             <input type="hidden" name="personId" value={person.id} />
@@ -619,7 +683,7 @@
       >
         Tävlingsgrenar
       </p>
-      {#each allCompetitionTemplates as competitionTemplate}
+      {#each sortedCompetitionTemplates as competitionTemplate}
         <form
           method="post"
           action="?/updateCompetitionTemplate"

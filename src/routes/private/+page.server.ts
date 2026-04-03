@@ -391,8 +391,23 @@ export const actions = {
       return fail(404, { error: "Tävlingsgrenen kunde inte hittas." });
     }
 
-    competition.title = String(form.get("title") ?? "").trim();
-    competition.description = String(form.get("description") ?? "").trim();
+    const template = competition.templateId
+      ? store.competitionTemplates.find(
+          (entry) => entry.id === competition.templateId,
+        )
+      : null;
+
+    if (form.has("title")) {
+      competition.title = String(form.get("title") ?? "").trim();
+    } else if (!competition.title && template) {
+      competition.title = template.title;
+    }
+
+    if (form.has("description")) {
+      competition.description = String(form.get("description") ?? "").trim();
+    } else if (!competition.description && template) {
+      competition.description = template.description;
+    }
 
     for (const participantId of year.participantIds) {
       const rawValue = String(form.get(`score:${participantId}`) ?? "").trim();
