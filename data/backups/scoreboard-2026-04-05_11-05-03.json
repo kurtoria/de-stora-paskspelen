@@ -1,0 +1,416 @@
+{
+  "people": [
+    {
+      "id": "82106eef-0fab-47fb-a9cd-6275c7e35531",
+      "name": "Laura"
+    },
+    {
+      "id": "47e1fb76-17e4-406c-bdb4-2509150e91c6",
+      "name": "Dase"
+    },
+    {
+      "id": "f74d2f3a-441e-4737-95e7-98d95c28a042",
+      "name": "Busterrhymes"
+    },
+    {
+      "id": "15f94994-d65e-47da-a73f-d4faf5898ea5",
+      "name": "Lilla fredspipan"
+    },
+    {
+      "id": "da0455bb-5bd7-4202-9f91-76e7f1182e84",
+      "name": "Lill-Börje"
+    }
+  ],
+  "competitionTemplates": [
+    {
+      "id": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+      "title": "Sten, sax & påse",
+      "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras."
+    },
+    {
+      "id": "56732b2f-e172-4ae8-ae23-6d7ae7ca0e1b",
+      "title": "Vikta rätt",
+      "description": "Kan ni era uppskattningar? På 2 minuter ska vi hitta saker som tillsammans väger exakt 1,4 kg. Närmast vinner."
+    },
+    {
+      "id": "6f686158-5e1c-465e-b4a5-9735dfa6f64e",
+      "title": "Måtta rätt",
+      "description": "Hur långt är en meter? På en minut ska vi uppskatta en meter. Närmast vinner"
+    },
+    {
+      "id": "9577c002-fe0a-413e-932a-55e7057fdc15",
+      "title": "Super smash bros",
+      "description": "Personen på täppan och så vidare."
+    },
+    {
+      "id": "7e0ea865-0b38-4a7a-8bcb-b4365916ab96",
+      "title": "Läggdags",
+      "description": "Är långa ben en fördel? Är korta ben en fördel? Hoppsasteg, längdhopp eller klassiska sjumilakliv. På hur få steg kan du ta dig från utgångspunkten till sängen?"
+    },
+    {
+      "id": "1fa4f43c-4721-4224-b61d-d3cfc3446de4",
+      "title": "Skära frukt",
+      "description": "Ta en kniv, skär en frukt itu. Se ditt resultat, blev det jämnt nu?"
+    },
+    {
+      "id": "8527dda0-3045-4b26-ae23-bad05158337b",
+      "title": "Sprut i bytta",
+      "description": "Välj nu spruta, kör varsin tur.\r\nFyll upp bytta, tills det rinner ur."
+    },
+    {
+      "id": "b5221a28-3561-44d8-ad19-ec38ffea6e4d",
+      "title": "Mental minut",
+      "description": "Hur lång är en minut? Tryck på knappen när den är slut!"
+    },
+    {
+      "id": "a3aa1b7b-0fe1-4405-8c4e-da6d6e5b943f",
+      "title": "Knowledge is power",
+      "description": "En DSP-klassiker, ni vet vad som gäller. Knowledge is power."
+    },
+    {
+      "id": "fb3c7404-e1e6-45e7-b913-98bbea23acf9",
+      "title": "Drawful",
+      "description": "Hur kreativ är du i din konst? Dags för skissa och gissa!"
+    },
+    {
+      "id": "0424fa83-f1ef-45b8-86f2-cfef04c71a72",
+      "title": "Jägarställning",
+      "description": "90 grader, du kan lita på mig, du kan lita på mig."
+    },
+    {
+      "id": "d40367bc-0681-4c09-aca4-ae1a7d9c58c2",
+      "title": "Plankan",
+      "description": ""
+    },
+    {
+      "id": "a2f1474a-035c-4764-984f-6f1968394adc",
+      "title": "Musikquiz: Särskolan",
+      "description": ""
+    },
+    {
+      "id": "7103a56a-4b47-4a68-a527-365c015d7017",
+      "title": "Snuscurling",
+      "description": "En dosa snus, närmast kanten vinner."
+    },
+    {
+      "id": "744bd0ce-aaa2-443c-b635-702babcb40d5",
+      "title": "Vindruva i munnen eller inte i munnen",
+      "description": "Med bluff, dubbelbluff eller trippelbluff osv"
+    },
+    {
+      "id": "04eb7279-66b3-491b-b35d-f9b957395816",
+      "title": "Mariokart",
+      "description": "Ni vet vad som gäller"
+    },
+    {
+      "id": "cdc3a1d2-3abb-46d8-b003-76e934a2c1c4",
+      "title": "1-6",
+      "description": "Slå en tärning och få alla nummer mellan 1 och 6. Losern börjar."
+    },
+    {
+      "id": "23509215-5c98-4015-a459-deaa5bc3a459",
+      "title": "Svart eller rött",
+      "description": "Du ska helt enkelt gissa om det nästa kortet är svart eller rött. Gissar du fel slutar din omgång."
+    },
+    {
+      "id": "a52f5988-c487-4afa-92a6-c909bbfbb4f1",
+      "title": "Dela godis",
+      "description": "Sortera godis. Rätt godis på rätt sida."
+    },
+    {
+      "id": "c5790dd6-7239-464d-ae88-f8d6b9289ef8",
+      "title": "Hitster",
+      "description": ""
+    },
+    {
+      "id": "4485d719-04b0-4285-962d-ce74789220eb",
+      "title": "Chicago",
+      "description": ""
+    },
+    {
+      "id": "e9c2dd6c-af3f-4916-914d-f294c54e92b5",
+      "title": "Yatzy",
+      "description": "Slår du bäst så vinner du"
+    },
+    {
+      "id": "b55af9b9-4eb7-4b5c-a503-6877586e9093",
+      "title": "Bästa priset",
+      "description": ""
+    },
+    {
+      "id": "9eb7babb-c0fb-497a-8cf2-3a84bf651f19",
+      "title": "Bästa priset",
+      "description": ""
+    }
+  ],
+  "years": [
+    {
+      "year": "2000",
+      "participantIds": [
+        "82106eef-0fab-47fb-a9cd-6275c7e35531",
+        "47e1fb76-17e4-406c-bdb4-2509150e91c6"
+      ],
+      "competitions": [
+        {
+          "id": "a41c465b-14f6-4c3f-8686-1bea9009f700",
+          "templateId": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+          "title": "Sten, sax & påse",
+          "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 3,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 2
+          }
+        },
+        {
+          "id": "6cb711d3-dc22-4301-b7ca-0c2658428a12",
+          "templateId": "56732b2f-e172-4ae8-ae23-6d7ae7ca0e1b",
+          "title": "Vikta rätt",
+          "description": "Kan ni era uppskattningar? På 2 minuter ska vi hitta saker som tillsammans väger exakt 1,4 kg. Närmast vinner.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0
+          }
+        }
+      ]
+    },
+    {
+      "year": "2026",
+      "participantIds": [
+        "82106eef-0fab-47fb-a9cd-6275c7e35531",
+        "47e1fb76-17e4-406c-bdb4-2509150e91c6",
+        "f74d2f3a-441e-4737-95e7-98d95c28a042",
+        "15f94994-d65e-47da-a73f-d4faf5898ea5"
+      ],
+      "competitions": [
+        {
+          "id": "b1a92728-ea84-476f-a8fe-b5741b131a9e",
+          "templateId": "70ed6178-8f65-45b3-8aef-d648328ab6cb",
+          "title": "Sten, sax & påse",
+          "description": "En spännande kamp i vem som kan läsa av den andres hand. I en klassisk vinn- eller försvinn ska den enfaldiga mästaren i sten-sax-påse koras.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 1,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 4,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 3,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 2
+          }
+        },
+        {
+          "id": "476e7186-0845-4304-9e45-e2491809f3c1",
+          "templateId": "56732b2f-e172-4ae8-ae23-6d7ae7ca0e1b",
+          "title": "Vikta rätt",
+          "description": "Kan ni era uppskattningar? På 2 minuter ska vi hitta saker som tillsammans väger exakt 1,4 kg. Närmast vinner.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 4,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 2,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 1
+          }
+        },
+        {
+          "id": "a3c7f720-5eed-49b3-bfa7-dafc2ced2ae0",
+          "templateId": "6f686158-5e1c-465e-b4a5-9735dfa6f64e",
+          "title": "Måtta rätt",
+          "description": "Hur långt är en meter? På en minut ska vi uppskatta en meter. Närmast vinner",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 1,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 2
+          }
+        },
+        {
+          "id": "22d887ce-5e73-46c5-8f1b-6c52fa46b626",
+          "templateId": "7e0ea865-0b38-4a7a-8bcb-b4365916ab96",
+          "title": "Läggdags",
+          "description": "Är långa ben en fördel? Är korta ben en fördel? Hoppsasteg, längdhopp eller klassiska sjumilakliv. På hur få steg kan du ta dig från utgångspunkten till sängen?",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 4,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 1,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        },
+        {
+          "id": "d14fef3c-e139-4b0d-a1f9-a96258be34c7",
+          "templateId": "8527dda0-3045-4b26-ae23-bad05158337b",
+          "title": "Sprut i bytta",
+          "description": "Välj nu spruta, kör varsin tur.\r\nFyll upp bytta, tills det rinner ur.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 1,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 4,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 3,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 2
+          }
+        },
+        {
+          "id": "78e179fd-1af0-46fe-abac-b62918ada982",
+          "templateId": "b5221a28-3561-44d8-ad19-ec38ffea6e4d",
+          "title": "Mental minut",
+          "description": "Hur lång är en minut? Tryck på knappen när den är slut!",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 4,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 2
+          }
+        },
+        {
+          "id": "422cc11f-2a93-4c47-ad32-c55bbd85bd36",
+          "templateId": "fb3c7404-e1e6-45e7-b913-98bbea23acf9",
+          "title": "Drawful",
+          "description": "Hur kreativ är du i din konst? Dags för skissa och gissa!",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 1
+          }
+        },
+        {
+          "id": "34d70c55-3761-4e2b-9103-b7cd71ad4df7",
+          "templateId": "0424fa83-f1ef-45b8-86f2-cfef04c71a72",
+          "title": "Jägarställning",
+          "description": "90 grader, du kan lita på mig, du kan lita på mig.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 1,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 3
+          }
+        },
+        {
+          "id": "151df248-7248-4bcc-8fb1-c976abc5dda3",
+          "templateId": "d40367bc-0681-4c09-aca4-ae1a7d9c58c2",
+          "title": "Plankan",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 1
+          }
+        },
+        {
+          "id": "111345a7-ab51-4429-ba71-757248a9a424",
+          "templateId": "a2f1474a-035c-4764-984f-6f1968394adc",
+          "title": "Musikquiz: Särskolan",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 4,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 2
+          }
+        },
+        {
+          "id": "dcb02824-12d7-49a4-9aeb-c568d44f6afb",
+          "templateId": "7103a56a-4b47-4a68-a527-365c015d7017",
+          "title": "Snuscurling",
+          "description": "En dosa snus, närmast kanten vinner.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 1,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 2,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        },
+        {
+          "id": "9e4c2c88-2288-418b-9bcd-cd6288ca7bb7",
+          "templateId": "cdc3a1d2-3abb-46d8-b003-76e934a2c1c4",
+          "title": "1-6",
+          "description": "Slå en tärning och få alla nummer mellan 1 och 6. Losern börjar.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 4,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 2,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 1
+          }
+        },
+        {
+          "id": "511675d7-2bd3-4d22-b49d-d9211346c270",
+          "templateId": "23509215-5c98-4015-a459-deaa5bc3a459",
+          "title": "Svart eller rött",
+          "description": "Du ska helt enkelt gissa om det nästa kortet är svart eller rött. Gissar du fel slutar din omgång.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 3,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        },
+        {
+          "id": "6acb76e7-fb84-4b2d-a6b5-b3ed919c1d21",
+          "templateId": "a52f5988-c487-4afa-92a6-c909bbfbb4f1",
+          "title": "Dela godis",
+          "description": "Sortera godis. Rätt godis på rätt sida.",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 1,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 2,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 3,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        },
+        {
+          "id": "f1104c76-fff0-4d8f-9b50-92d34a0eed56",
+          "templateId": "c5790dd6-7239-464d-ae88-f8d6b9289ef8",
+          "title": "Hitster",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 4,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 3
+          }
+        },
+        {
+          "id": "414dc59d-64fb-4783-872d-478e96cd7213",
+          "templateId": "4485d719-04b0-4285-962d-ce74789220eb",
+          "title": "Chicago",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 2,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 1,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 4,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 3
+          }
+        },
+        {
+          "id": "76a51e48-b7ff-481b-94aa-e118203f6236",
+          "templateId": "e9c2dd6c-af3f-4916-914d-f294c54e92b5",
+          "title": "Yatzy",
+          "description": "Slår du bäst så vinner du",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 3,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 2,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        },
+        {
+          "id": "5614191e-8c9b-4fbf-a9bb-e97f25ade5f2",
+          "templateId": "b55af9b9-4eb7-4b5c-a503-6877586e9093",
+          "title": "Bästa priset",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 0,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 0,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 0,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 0
+          }
+        },
+        {
+          "id": "2d0e4810-bacf-4407-b9c7-d2727bd0e132",
+          "templateId": "9eb7babb-c0fb-497a-8cf2-3a84bf651f19",
+          "title": "Bästa priset",
+          "description": "",
+          "scores": {
+            "82106eef-0fab-47fb-a9cd-6275c7e35531": 3,
+            "47e1fb76-17e4-406c-bdb4-2509150e91c6": 2,
+            "f74d2f3a-441e-4737-95e7-98d95c28a042": 1,
+            "15f94994-d65e-47da-a73f-d4faf5898ea5": 4
+          }
+        }
+      ]
+    }
+  ]
+}
